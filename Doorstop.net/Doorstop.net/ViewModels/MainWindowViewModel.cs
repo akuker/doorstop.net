@@ -1,0 +1,189 @@
+using Microsoft.Win32;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Input;
+using Doorstop.net.Models;
+
+namespace Doorstop.net.ViewModels
+{
+  public class MainWindowViewModel : INotifyPropertyChanged
+  {
+    private string requirementsRepoPath;
+    // Path of the currently selected Doorstop repository
+    public string RequirementsRepoPath
+    {
+      get { return requirementsRepoPath; }
+      set
+      {
+        if (requirementsRepoPath != value)
+        {
+          requirementsRepoPath = value;
+          NotifyPropertyChanged();
+          ExecuteReloadTree(value);
+        }
+      }
+    }
+
+    private ObservableCollection<RequirementsDocument> directoryStructure;
+
+    public ObservableCollection<RequirementsDocument> DirectoryStructure
+    {
+      get { return directoryStructure; }
+      set {
+        directoryStructure = value;
+        NotifyPropertyChanged();
+      }
+    }
+
+
+
+    #region INotifyPropertyChanged Utilities
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    // This method is called by the Set accessor of each property.
+    // The CallerMemberName attribute that is applied to the optional propertyName
+    // parameter causes the property name of the caller to be substituted as an argument.
+    private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
+    {
+      if (PropertyChanged != null)
+      {
+        PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+      }
+    }
+    #endregion
+
+    #region Command objects
+    private ICommand _openRepoCommand;
+
+    public ICommand OpenRepoCommand
+    {
+      get { return _openRepoCommand; }
+      set { _openRepoCommand = value; }
+    }
+
+
+    //public RelayCommand OpenRepoCommand { get; set; }
+    public RelayCommand ValidateCommand { get; set; }
+    public RelayCommand AddRequirementCommand { get; set; }
+    public RelayCommand PublishAllCommand { get; set; }
+
+    Predicate<object> OpenRepoCanExecute { get; set; }
+
+    public class DelegateCommand<T> : System.Windows.Input.ICommand where T:class
+    {
+      private readonly Predicate<T> _canExecute;
+      private readonly Action<T> _execute;
+
+      public DelegateCommand(Action<T> execute)
+          : this(execute, null)
+      {
+      }
+
+      public DelegateCommand(Action<T> execute, Predicate<T> canExecute)
+      {
+        _execute = execute;
+        _canExecute = canExecute;
+      }
+
+      public bool CanExecute(object parameter)
+      {
+        if (_canExecute == null)
+          return true;
+
+        return _canExecute((T)parameter);
+      }
+
+      public void Execute(object parameter)
+      {
+        _execute((T)parameter);
+      }
+
+      public event EventHandler CanExecuteChanged;
+      public void RaiseCanExecuteChanged()
+      {
+        if (CanExecuteChanged != null)
+          CanExecuteChanged(this, EventArgs.Empty);
+      }
+    }
+
+    #endregion
+
+    private readonly DelegateCommand<string> _clickCommand;
+
+
+    public MainWindowViewModel()
+    {
+      directoryStructure = new ObservableCollection<RequirementsDocument>();
+      directoryStructure.Add(new RequirementsDocument { ShortName = "Not loaded...." });
+      _openRepoCommand = new DelegateCommand<string>(ExecuteOpenRepo, (z) => { return true; });
+      //ValidateCommand = new RelayCommand(ExecuteValidate, OpenRepoCanExecute);
+      //AddRequirementCommand = new RelayCommand(ExecuteAddRequirement, OpenRepoCanExecute);
+      //PublishAllCommand = new RelayCommand(ExecutePublishAll, OpenRepoCanExecute);
+      _clickCommand = new DelegateCommand<string>((s) => { Console.WriteLine("Something or another: " + s); }, (s) => {return true; });
+    }
+
+    public DelegateCommand<string> ButtonClickCommand
+    {
+      get { return _clickCommand; }
+    }
+
+    private void ExecuteReloadTree(string Path = null)
+    {
+      this.DirectoryStructure.Clear();
+      if (Path == null)
+        Path = this.RequirementsRepoPath;
+      string fullPath = System.IO.Path.GetFullPath(Path);
+      var directoryTree = new RequirementsFolder { FullPath = fullPath};
+      directoryTree.LoadChildren();
+      foreach (var child in directoryTree.Children)
+      {
+        this.DirectoryStructure.Add(child);
+      }
+    }
+
+
+
+    private void ExecuteOpenRepo(object obj)
+    {
+      var openDirectoryDialog = new OpenFileDialog();
+      if (System.IO.Directory.Exists(RequirementsRepoPath))
+      {
+        openDirectoryDialog.InitialDirectory = RequirementsRepoPath;
+      }
+      openDirectoryDialog.Multiselect = false;
+      openDirectoryDialog.DefaultExt = ".yml";
+      if(openDirectoryDialog.ShowDialog() == true)
+      {
+        if(System.IO.File.Exists(openDirectoryDialog.FileName))
+        {
+          RequirementsRepoPath = System.IO.Path.GetDirectoryName(openDirectoryDialog.FileName);
+          ExecuteReloadTree();
+        }
+
+      }
+    }
+
+    private void ExecuteValidate(object obj)
+    {
+
+    }
+    private void ExecuteAddRequirement(object obj)
+    {
+
+    }
+    private void ExecutePublishAll(object obj)
+    {
+
+    }
+
+
+
+  }
+
+}
