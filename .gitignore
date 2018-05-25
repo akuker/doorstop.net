@@ -48,3 +48,7 @@ Icon*
 
 # Eclipse
 .settings
+/.vs
+/Doorstop.net/Doorstop.net/bin
+/Doorstop.net/Doorstop.net/obj
+/Doorstop.net/.vs
