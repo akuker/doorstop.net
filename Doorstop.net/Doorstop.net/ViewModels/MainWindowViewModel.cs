@@ -9,11 +9,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Doorstop.net.Models;
+using System.Windows;
 
 namespace Doorstop.net.ViewModels
 {
   public class MainWindowViewModel : INotifyPropertyChanged
   {
+
+    Dictionary<String, Views.DocumentView> openWindows = new Dictionary<string, Views.DocumentView>();
+
     private string requirementsRepoPath;
     // Path of the currently selected Doorstop repository
     public string RequirementsRepoPath
@@ -25,7 +29,7 @@ namespace Doorstop.net.ViewModels
         {
           requirementsRepoPath = value;
           NotifyPropertyChanged();
-          ExecuteReloadTree(value);
+          Properties.Settings.Default.RepoPath = value;
         }
       }
     }
@@ -56,16 +60,11 @@ namespace Doorstop.net.ViewModels
         PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
       }
     }
-    #endregion
 
-    #region Command objects
-    private ICommand _openRepoCommand;
-
-    public ICommand OpenRepoCommand
-    {
-      get { return _openRepoCommand; }
-      set { _openRepoCommand = value; }
-    }
+        public ICommand OpenRepoCommand { get; set; }
+        public ICommand ReloadRepoCommand { get; set; }
+    public ICommand OpenDocumentCommand { get; set; }
+    public ICommand CleanupCommand { get; set; }
 
 
     //public RelayCommand OpenRepoCommand { get; set; }
@@ -120,12 +119,28 @@ namespace Doorstop.net.ViewModels
     public MainWindowViewModel()
     {
       directoryStructure = new ObservableCollection<RequirementsDocument>();
-      directoryStructure.Add(new RequirementsDocument { ShortName = "Not loaded...." });
-      _openRepoCommand = new DelegateCommand<string>(ExecuteOpenRepo, (z) => { return true; });
+      directoryStructure.Add(new RequirementsDocument {FullPath="Not loaded....", ShortName = "Not loaded...."});
+      OpenRepoCommand = new DelegateCommand<string>(ExecuteOpenRepo, (z) => { return true; });
+      ReloadRepoCommand = new DelegateCommand<string>(ExecuteReloadTree, (z) => { return true; });
+      OpenDocumentCommand = new DelegateCommand<string>(ExecuteOpenDocument, (z) => { return true; });
+      CleanupCommand = new DelegateCommand<string>(ExecuteCleanup, (z) => { return true; });
       //ValidateCommand = new RelayCommand(ExecuteValidate, OpenRepoCanExecute);
       //AddRequirementCommand = new RelayCommand(ExecuteAddRequirement, OpenRepoCanExecute);
       //PublishAllCommand = new RelayCommand(ExecutePublishAll, OpenRepoCanExecute);
-      _clickCommand = new DelegateCommand<string>((s) => { Console.WriteLine("Something or another: " + s); }, (s) => {return true; });
+      _clickCommand = new DelegateCommand<string>(new Action<string>(LoadSomething), (s) => {return true; });
+
+      if ((Properties.Settings.Default.RepoPath != null) && (Properties.Settings.Default.RepoPath.Length > 0))
+      {
+        RequirementsRepoPath = Properties.Settings.Default.RepoPath;
+        ExecuteReloadTree();
+      }
+
+    }
+
+    public void LoadSomething(string bla ="")
+    {
+      Document myNewDoc = Document.Load(@"C:\Users\theto\source\repos\doorstop.net\reqs\.doorstop.yml");
+      Item myItem = Item.Load(@"C:\Users\theto\source\repos\doorstop.net\doorstop\core\tests\files\subfolder\REQ004.yml",myNewDoc);
     }
 
     public DelegateCommand<string> ButtonClickCommand
@@ -133,11 +148,55 @@ namespace Doorstop.net.ViewModels
       get { return _clickCommand; }
     }
 
+    private void ExecuteOpenDocument(string path)
+    {
+      Views.DocumentView docWindow = null;
+
+          if (openWindows.ContainsKey(path) && (openWindows[path].DataContext != null))
+          {
+            docWindow = openWindows[path];
+            docWindow.Activate();
+          }
+          else
+          {
+            docWindow = new Views.DocumentView();
+            var documentModel = Models.Document.Load(path);
+            if (documentModel == null)
+            {
+              throw new Exception("Error while trying to open " + path);
+            }
+
+            docWindow.DataContext = documentModel;
+            openWindows[path] = docWindow;
+            docWindow.Show();
+          }
+
+        }
+
+    public void ExecuteCleanup(string junk="")
+    {
+        // Close all of the other windows
+      foreach (var curWindow in this.openWindows.Values)
+      {
+        curWindow.Close();
+      }
+      // Save Settings
+      Properties.Settings.Default.Save();
+
+    }
+
     private void ExecuteReloadTree(string Path = null)
     {
       this.DirectoryStructure.Clear();
       if (Path == null)
         Path = this.RequirementsRepoPath;
+      else
+        Path = System.IO.Path.GetDirectoryName(Path);
+      if ((Path == null) || (Path.Length < 1))
+      {
+        Logger.Warning("Invalid Requirements Repo directory defined. Empty string");
+        return;
+      }
       string fullPath = System.IO.Path.GetFullPath(Path);
       var directoryTree = new RequirementsFolder { FullPath = fullPath};
       directoryTree.LoadChildren();

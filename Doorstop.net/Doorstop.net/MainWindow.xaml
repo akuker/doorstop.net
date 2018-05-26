@@ -40,7 +40,7 @@
           <TextBox AcceptsReturn="False" DockPanel.Dock="Left" Text="{Binding Path=RequirementsRepoPath, NotifyOnTargetUpdated=True, Mode=TwoWay}" />
         </DockPanel>
       </GroupBox>
-      <TreeView ItemsSource="{Binding Path=DirectoryStructure}">
+      <TreeView ItemsSource="{Binding Path=DirectoryStructure}" MouseDoubleClick="TreeView_MouseDoubleClick">
         <TreeView.Resources>
           <HierarchicalDataTemplate ItemsSource="{Binding Children}" DataType="{x:Type models:RequirementsFolder}">
             <StackPanel Orientation="Horizontal" Margin="1">

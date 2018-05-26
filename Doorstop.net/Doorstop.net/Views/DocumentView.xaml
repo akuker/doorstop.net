@@ -1,0 +1,59 @@
+<Window x:Class="Doorstop.net.Views.DocumentView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Doorstop.net.Views"
+        mc:Ignorable="d"
+        Title="DocumentWindow" Height="450" Width="800">
+    <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="Auto"/>
+      <ColumnDefinition Width="*"/>
+    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+
+    <Menu Grid.Row="0" Grid.ColumnSpan="2">
+      <MenuItem Header="_File">
+        <MenuItem Header="_New Document"/>
+        <MenuItem Header="_Open Document" Command="{Binding OpenRepoCommand}" CommandParameter="_OpenDocument"/>
+        <Separator/>
+        <MenuItem Header="_Exit"/>
+      </MenuItem>
+      <MenuItem Header="_Python Commands">
+        <MenuItem Header="_Create Document..."/>
+        <MenuItem Header="_Add Requirement"/>
+        <MenuItem Header="_Link Requirement..."/>
+        <MenuItem Header="_Run Integrity Checks"/>
+        <MenuItem Header="_Publish HTML documents"/>
+      </MenuItem>
+    </Menu>
+    <ToolBar Grid.Row="1" Grid.ColumnSpan="2">
+        <Button IsEnabled="False">
+          <StackPanel Orientation="Horizontal">
+          <Frame Source="/Doorstop.net;component/VS2017 Image Library/Document/Document_16x.xaml" />
+          <TextBlock>New File</TextBlock>
+          </StackPanel>
+        </Button>
+        <Button IsEnabled="False">
+          <StackPanel Orientation="Horizontal">
+            <Frame Margin="1" Source="/Doorstop.net;component/VS2017 Image Library/FolderOpen/FolderOpen_16x.xaml" />
+            <TextBlock>Open Folder</TextBlock>
+          </StackPanel>
+        </Button>
+        <Button IsEnabled="False">
+          <StackPanel Orientation="Horizontal" Margin="1">
+            <Frame Margin="1" Source="/Doorstop.net;component/VS2017 Image Library/NewRelationship/NewRelationship_16x.xaml" />
+            <TextBlock Text="New Link" />
+          </StackPanel>
+        </Button>
+          </ToolBar>
+
+      
+    </Grid>
+</Window>

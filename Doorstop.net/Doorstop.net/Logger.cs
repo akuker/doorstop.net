@@ -12,5 +12,15 @@ namespace Doorstop.net
     {
       Console.WriteLine("!!Warning: " + message);
     }
+
+    public static void Warning(Exception ex)
+    {
+      Warning(ex.Message);
+    }
+
+    public static void Debug(string message)
+    {
+      Console.WriteLine(" Debug: " + message);
+    }
   }
 }

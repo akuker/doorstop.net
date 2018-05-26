@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,10 +21,48 @@ namespace Doorstop.net
   /// </summary>
   public partial class MainWindow : Window
   {
+
+    ViewModels.MainWindowViewModel viewModel;
+
     public MainWindow()
     {
       InitializeComponent();
-      this.DataContext = new ViewModels.MainWindowViewModel();
+      viewModel = new ViewModels.MainWindowViewModel();
+      this.DataContext = viewModel;
+      this.Closing += new CancelEventHandler(OnWindowClosing);
+
+    }
+
+    void OnWindowClosing(object sender, CancelEventArgs e)
+    {
+      viewModel.CleanupCommand.Execute("");
+    }
+
+    private void TreeView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+    {
+      TreeView tree = sender as TreeView;
+
+      if (tree != null)
+      {
+        Models.RequirementsDocument document = tree.SelectedValue as Models.RequirementsDocument;
+        if (document is Models.RequirementsFolder)
+          return;
+
+        if (document != null)
+        {
+          try
+          {
+            viewModel.OpenDocumentCommand.Execute(document.FullPath);
+          }
+          catch (Exception ex)
+          {
+            MessageBox.Show(ex.Message, "Error opening document file", MessageBoxButton.OK, MessageBoxImage.Error);
+            Logger.Warning(ex.Message);
+          }
+        }
+
+      }
+
     }
   }
 }

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Doorstop.net.Models
 {
 
-  public class RequirementsDocument
+  public class RequirementsDocument: INotifyPropertyChanged
   {
     #region INotifyPropertyChanged Utilities
     public event PropertyChangedEventHandler PropertyChanged;
@@ -63,6 +63,24 @@ namespace Doorstop.net.Models
       Children = new ObservableCollection<RequirementsDocument>();
     }
 
+    /// <summary>
+    /// Checks to see if the directory contains a doorstop document at any level.
+    /// </summary>
+    /// <returns>True if this direcotry contains a doorstop document</returns>
+    public bool ContainsDoorstopDocument()
+    {
+      foreach (var child in Children)
+      {
+        if (child is RequirementsDocument)
+          return true;
+        else if (child is RequirementsFolder)
+          if (((RequirementsFolder)child).ContainsDoorstopDocument())
+            return true;
+
+      }
+      return false;
+    }
+
     public void LoadChildren()
     {
       List<string> files = new List<string>(System.IO.Directory.GetDirectories(this.FullPath));
@@ -72,13 +90,16 @@ namespace Doorstop.net.Models
       {
         if (System.IO.File.Exists(curFile))
         {
-          Children.Add(new RequirementsDocument { FullPath = curFile });
+          // We only care about Doorstop documents. Ignore everything else
+          if(System.IO.Path.GetFileName(curFile) == Document.DocumentConstants.ConfigFileName)
+            Children.Add(new RequirementsDocument { FullPath = curFile });
         }
         else if (System.IO.Directory.Exists(curFile))
         {
           var newDir = new RequirementsFolder { FullPath = curFile };
           newDir.LoadChildren();
-          Children.Add(newDir);
+          if(newDir.ContainsDoorstopDocument())
+            Children.Add(newDir);
         }
         else
         {
