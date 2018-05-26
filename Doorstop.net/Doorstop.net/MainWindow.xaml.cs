@@ -27,10 +27,8 @@ namespace Doorstop.net
     public MainWindow()
     {
       InitializeComponent();
-      viewModel = new ViewModels.MainWindowViewModel();
-      this.DataContext = viewModel;
+      viewModel = (ViewModels.MainWindowViewModel)this.DataContext;
       this.Closing += new CancelEventHandler(OnWindowClosing);
-
     }
 
     void OnWindowClosing(object sender, CancelEventArgs e)
@@ -63,6 +61,11 @@ namespace Doorstop.net
 
       }
 
+    }
+
+    private void OnExitMenuButton_Click(object sender, RoutedEventArgs e)
+    {
+      this.Close();
     }
   }
 }

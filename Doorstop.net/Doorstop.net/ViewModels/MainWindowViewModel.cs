@@ -159,14 +159,7 @@ namespace Doorstop.net.ViewModels
           }
           else
           {
-            docWindow = new Views.DocumentView();
-            var documentModel = Models.Document.Load(path);
-            if (documentModel == null)
-            {
-              throw new Exception("Error while trying to open " + path);
-            }
-
-            docWindow.DataContext = documentModel;
+            docWindow = new Views.DocumentView(path);
             openWindows[path] = docWindow;
             docWindow.Show();
           }

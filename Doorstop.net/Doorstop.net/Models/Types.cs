@@ -17,6 +17,11 @@ namespace Doorstop.net.Models
       public String Value { get; set; }
 
       public String Short { get { return Value.ToLower(); } }
+
+      public override string ToString()
+      {
+        return this.Value;
+      }
     }
 
     /// <summary>
@@ -26,6 +31,11 @@ namespace Doorstop.net.Models
     {
       ///TODO: copy the logic from the python code. Doesn't do any checking for the valid prefixes here. Maybe relyin on Python for that????
       public String Value { get; set; }
+
+      public override string ToString()
+      {
+        return this.Value;
+      }
     }
     /// <summary>
     ///    Variable-length numerical outline level values.
@@ -53,6 +63,16 @@ namespace Doorstop.net.Models
         levelComponents = new List<int>(level.levelComponents);
         IsHeading = level.IsHeading;
 
+      }
+      public override string ToString()
+      {
+        string retString = "";
+        retString = this.levelComponents[0].ToString();
+        for (int i=1; i<this.levelComponents.Count; i++)
+        {
+          retString += ("." + this.levelComponents[i].ToString());
+        }
+        return retString;
       }
 
       /// <summary>

@@ -97,7 +97,10 @@ namespace Doorstop.net.Models
       Document retValue = null;
       // Load the YML file
       try {
-        var yamlFilePath = System.IO.Path.GetDirectoryName(System.IO.Path.GetFullPath(path));
+        var yamlFilePath = System.IO.Path.GetFullPath(path);
+        // If the path is a file name, we need to get its enclosing directory.
+        if (System.IO.File.Exists(yamlFilePath))
+          yamlFilePath = System.IO.Path.GetDirectoryName(yamlFilePath);
         var yamlFileName = System.IO.Path.Combine(yamlFilePath, DocumentConstants.ConfigFileName);
         using (var fileStream = new System.IO.StreamReader(yamlFileName))
         {

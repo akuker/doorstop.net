@@ -26,6 +26,17 @@ namespace Doorstop.net.Views
       this.Closing += new CancelEventHandler(OnWindowClosing);
 
     }
+    public DocumentView(string path)
+      : this()
+    {
+      ViewModels.DocumentViewModel viewModel = this.DataContext as ViewModels.DocumentViewModel;
+
+      if (viewModel != null)
+      {
+        viewModel.FilePath = path;
+      }
+
+    }
 
     void OnWindowClosing(object sender, CancelEventArgs e)
     {

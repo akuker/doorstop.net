@@ -4,9 +4,13 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Doorstop.net.Views"
+        xmlns:viewmodels="clr-namespace:Doorstop.net.ViewModels"
         mc:Ignorable="d"
         Title="DocumentWindow" Height="450" Width="800">
-    <Grid>
+  <Window.DataContext>
+    <viewmodels:DocumentViewModel/>
+  </Window.DataContext>
+  <Grid>
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="Auto"/>
       <ColumnDefinition Width="*"/>
@@ -20,17 +24,18 @@
 
     <Menu Grid.Row="0" Grid.ColumnSpan="2">
       <MenuItem Header="_File">
-        <MenuItem Header="_New Document"/>
-        <MenuItem Header="_Open Document" Command="{Binding OpenRepoCommand}" CommandParameter="_OpenDocument"/>
+        <MenuItem Header="_New Document"  IsEnabled="False"/>
+        <MenuItem Header="_Open Document" Command="{Binding OpenRepoCommand}" CommandParameter="_OpenDocument"  IsEnabled="False"/>
         <Separator/>
         <MenuItem Header="_Exit"/>
+        <MenuItem Header="E_xit" Command="ApplicationCommands.Close" InputGestureText="Alt+F4"/>
       </MenuItem>
       <MenuItem Header="_Python Commands">
-        <MenuItem Header="_Create Document..."/>
-        <MenuItem Header="_Add Requirement"/>
-        <MenuItem Header="_Link Requirement..."/>
-        <MenuItem Header="_Run Integrity Checks"/>
-        <MenuItem Header="_Publish HTML documents"/>
+        <MenuItem Header="_Create Document..." IsEnabled="False"/>
+        <MenuItem Header="_Add Requirement" IsEnabled="False"/>
+        <MenuItem Header="_Link Requirement..." IsEnabled="False"/>
+        <MenuItem Header="_Run Integrity Checks" IsEnabled="False"/>
+        <MenuItem Header="_Publish HTML documents" IsEnabled="False"/>
       </MenuItem>
     </Menu>
     <ToolBar Grid.Row="1" Grid.ColumnSpan="2">
@@ -52,8 +57,29 @@
             <TextBlock Text="New Link" />
           </StackPanel>
         </Button>
-          </ToolBar>
+    </ToolBar>
+    <GroupBox Header="Document Explorer" Grid.Column="0" Grid.Row="2" >
+    <DockPanel Name="DocumentExplorer_DockPanel" LastChildFill="True">
+      <Label DockPanel.Dock="Top">HI</Label>
+        <Button DockPanel.Dock="Top">asdf</Button>
+        <TreeView DockPanel.Dock="Top" ItemsSource="{Binding Path=DocumentItems}" Grid.Row="0" BorderBrush="Black" BorderThickness="1"/>
+      </DockPanel>
+    </GroupBox>
+    <Grid Name="MainEditor_Grid" Grid.Column="1" Grid.Row="2">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="*"/>
+      </Grid.RowDefinitions>
+      <GridSplitter Grid.Row="1" Height="10"/>
+      <ListView ItemsSource="{Binding Path=DocumentItems}" Grid.Row="0"/>
+      <DataGrid ItemsSource="{Binding Path=DocumentItems}" Grid.Row="2"/>
+    </Grid>
 
+    <StatusBar Grid.Row="3" Grid.ColumnSpan="2">
+      <ProgressBar Value="30" Width="100" Height="15"></ProgressBar>
+      <StatusBarItem >This is my status</StatusBarItem>
+    </StatusBar>
       
     </Grid>
 </Window>

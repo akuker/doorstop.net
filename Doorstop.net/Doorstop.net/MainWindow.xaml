@@ -8,9 +8,9 @@
         xmlns:models="clr-namespace:Doorstop.net.Models"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-  <!--<Window.DataContext>-->
-    <!--<viewmodels:MainWindowViewModel/>
-  </Window.DataContext>-->
+  <Window.DataContext>
+    <viewmodels:MainWindowViewModel/>
+  </Window.DataContext>
     <Grid>
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto"/>
@@ -18,17 +18,17 @@
     </Grid.RowDefinitions>
     <Menu Grid.Row="0">
       <MenuItem Header="_File">
-        <MenuItem Header="_New Document"/>
+        <MenuItem Header="_New Document" IsEnabled="False"/>
         <MenuItem Header="_Open Document" Command="{Binding OpenRepoCommand}" CommandParameter="_OpenDocument"/>
         <Separator/>
-        <MenuItem Header="_Exit"/>
+        <MenuItem Header="Exit" Click="OnExitMenuButton_Click"/>
       </MenuItem>
       <MenuItem Header="_Python Commands">
-        <MenuItem Header="_Create Document..."/>
-        <MenuItem Header="_Add Requirement"/>
-        <MenuItem Header="_Link Requirement..."/>
-        <MenuItem Header="_Run Integrity Checks"/>
-        <MenuItem Header="_Publish HTML documents"/>
+        <MenuItem Header="_Create Document..." IsEnabled="False"/>
+        <MenuItem Header="_Add Requirement" IsEnabled="False"/>
+        <MenuItem Header="_Link Requirement..." IsEnabled="False"/>
+        <MenuItem Header="_Run Integrity Checks" IsEnabled="False"/>
+        <MenuItem Header="_Publish HTML documents" IsEnabled="False"/>
       </MenuItem>
     </Menu>
     <DockPanel Grid.Row="1">
