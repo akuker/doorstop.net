@@ -34,6 +34,7 @@
     <DockPanel Grid.Row="1">
       <GroupBox DockPanel.Dock="Top" Header="Doorstop Repository">
         <DockPanel>
+          <Button DockPanel.Dock="Right" Content=" Explore " Command="{Binding LaunchExplorerCommand}"/>
           <Button DockPanel.Dock="Right" Content=" ... " Command="{Binding OpenRepoCommand}"/>
           <Button DockPanel.Dock="Right" Content="Reload" Command="{Binding ReloadRepoCommand}"/>
           <Button Command="{Binding ButtonClickCommand}">Test</Button>

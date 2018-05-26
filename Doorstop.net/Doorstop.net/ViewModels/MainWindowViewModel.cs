@@ -61,10 +61,11 @@ namespace Doorstop.net.ViewModels
       }
     }
 
-        public ICommand OpenRepoCommand { get; set; }
-        public ICommand ReloadRepoCommand { get; set; }
+    public ICommand OpenRepoCommand { get; set; }
+    public ICommand ReloadRepoCommand { get; set; }
     public ICommand OpenDocumentCommand { get; set; }
     public ICommand CleanupCommand { get; set; }
+    public ICommand LaunchExplorerCommand { get; set; }
 
 
     //public RelayCommand OpenRepoCommand { get; set; }
@@ -124,6 +125,7 @@ namespace Doorstop.net.ViewModels
       ReloadRepoCommand = new DelegateCommand<string>(ExecuteReloadTree, (z) => { return true; });
       OpenDocumentCommand = new DelegateCommand<string>(ExecuteOpenDocument, (z) => { return true; });
       CleanupCommand = new DelegateCommand<string>(ExecuteCleanup, (z) => { return true; });
+      LaunchExplorerCommand = new DelegateCommand<string>(ExecuteLaunchExplorer, (z) => { return true; });
       //ValidateCommand = new RelayCommand(ExecuteValidate, OpenRepoCanExecute);
       //AddRequirementCommand = new RelayCommand(ExecuteAddRequirement, OpenRepoCanExecute);
       //PublishAllCommand = new RelayCommand(ExecutePublishAll, OpenRepoCanExecute);
@@ -146,6 +148,19 @@ namespace Doorstop.net.ViewModels
     public DelegateCommand<string> ButtonClickCommand
     {
       get { return _clickCommand; }
+    }
+
+    private void ExecuteLaunchExplorer(string path=null)
+    {
+      if ((path == null) || (path.Length < 1))
+        path = RequirementsRepoPath;
+
+      if(System.IO.File.Exists(path))
+      {
+        path = System.IO.Path.GetDirectoryName(path);
+      }
+
+      System.Diagnostics.Process.Start(path);
     }
 
     private void ExecuteOpenDocument(string path)

@@ -44,8 +44,14 @@ namespace Doorstop.net.Models
       set { localValue = value; NotifyPropertyChanged(); }
     }
 
+    public override string ToString()
+    {
+      return "[" + Key + "] " + Value.ToString();
+    }
+
   }
-    public class Item : INotifyPropertyChanged
+
+  public class Item : INotifyPropertyChanged
   {
     #region INotifyPropertyChanged Utilities
     public event PropertyChangedEventHandler PropertyChanged;
@@ -131,12 +137,50 @@ namespace Doorstop.net.Models
     #endregion
 
     #region Links
-    public ObservableCollection<Types.UID> ParentLinks { get { return new ObservableCollection<Types.UID>(); } }
-    public ObservableCollection<Types.UID> ChildLinks { get { return new ObservableCollection<Types.UID>(); } }
+    public ObservableCollection<Types.Link> ParentLinks { get; set; } = new ObservableCollection<Types.Link>();
+  public ObservableCollection<Types.Link> ChildLinks { get; set; } = new ObservableCollection<Types.Link>();
+
+    public string ParentLinksString
+    {
+      get
+      {
+        string retString = "";
+        foreach (var attribute in ParentLinks)
+        {
+          retString += attribute.ToString() + Environment.NewLine;
+        }
+        return retString;
+      }
+    }
+    public string ChildrenLinksString
+    {
+      get
+      {
+        string retString = "";
+        foreach (var attribute in ChildLinks)
+        {
+          retString += attribute.ToString() + Environment.NewLine;
+        }
+        return retString;
+      }
+    }
     #endregion
 
     #region Attributes
     public ObservableCollection<IItemAttribute<string>> Attributes { get; set; }
+
+    public string AttributesString
+    {
+      get
+      {
+        string retString = "";
+        foreach (var attribute in Attributes)
+        {
+          retString += attribute.ToString() + Environment.NewLine;
+        }
+        return retString;
+      }
+    }
     #endregion
 
     #region Constructor/destructor
@@ -169,20 +213,23 @@ namespace Doorstop.net.Models
           {
             Console.WriteLine("Child[" + entry.Key.ToString() + "]: " + ((YamlScalarNode)entry.Key).Value);
             string currentKey = entry.Key.ToString();
-            string currentValue = entry.Value.ToString(); //. "yes";// ((YamlMappingNode)entry).Children[new YamlScalarNode(currentKey)].Value.ToString();
+            var currentValue = entry.Value;
             switch (currentKey)
             {
               case "level":
-                retValue.Level = new Types.Level(currentValue);
+                retValue.Level = new Types.Level(currentValue.ToString());
                 break;
               case "text":
-                retValue.Text = currentValue;
+                retValue.Text = currentValue.ToString();
                 break;
               case "header":
-                retValue.Heading = currentValue;
+                retValue.Heading = currentValue.ToString();
+                break;
+              case "links":
+                retValue.addLinks(currentValue);
                 break;
               default:
-                retValue.Attributes.Add(new IItemAttribute<string> { Key = currentKey, Value = currentValue });
+                retValue.Attributes.Add(new IItemAttribute<string> { Key = currentKey, Value = currentValue.ToString() });
                 Logger.Debug("Found un-handled Item Attribute: " + currentKey);
                 break;
             }
@@ -194,6 +241,51 @@ namespace Doorstop.net.Models
         Logger.Warning(ex);
       }
       return retValue;
+    }
+
+    private void addLinks(YamlNode yamlNode)
+    {
+      YamlSequenceNode listOfLinksNode = yamlNode as YamlSequenceNode;
+      if(listOfLinksNode != null)
+      {
+        foreach (YamlNode child in listOfLinksNode.Children)
+        {
+          YamlMappingNode linkList = child as YamlMappingNode;
+          if(linkList != null)
+          {
+            foreach(var link in linkList.Children)
+            {
+
+              YamlScalarNode linkUid = link.Key as YamlScalarNode;
+              YamlScalarNode linkStamp = link.Value as YamlScalarNode;
+
+              Types.Link newLink = new Types.Link();
+              if((linkUid != null) && (linkUid.ToString().Length > 1))
+              {
+                newLink.UID = new Types.UID { Value = linkUid.ToString() };
+                if ((linkStamp != null) && (linkStamp.ToString().Length > 1))
+                  newLink.Stamp = linkStamp.ToString();
+                this.ParentLinks.Add(newLink);
+                Logger.Debug("[" + this.UID.Value.ToString() + "] links to: " + linkUid.ToString() + ":" + linkStamp.ToString());
+              }
+              else
+              {
+                Logger.Warning("Found invalid link UID in " + this.FileName);
+              }
+            }
+          }
+          else
+          {
+            Logger.Warning("Found invalid link item in " + this.FileName);
+          }
+        }
+      }
+      else
+      {
+        Logger.Warning("Found invalid links in " + this.FileName);
+      }
+      Console.WriteLine(yamlNode);
+
     }
 
     public void Save()

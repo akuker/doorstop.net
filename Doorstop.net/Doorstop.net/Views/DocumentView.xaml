@@ -13,6 +13,7 @@
   <Grid>
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="Auto"/>
+      <ColumnDefinition Width="Auto"/>
       <ColumnDefinition Width="*"/>
     </Grid.ColumnDefinitions>
     <Grid.RowDefinitions>
@@ -22,7 +23,7 @@
       <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
 
-    <Menu Grid.Row="0" Grid.ColumnSpan="2">
+    <Menu Grid.Row="0" Grid.ColumnSpan="3">
       <MenuItem Header="_File">
         <MenuItem Header="_New Document"  IsEnabled="False"/>
         <MenuItem Header="_Open Document" Command="{Binding OpenRepoCommand}" CommandParameter="_OpenDocument"  IsEnabled="False"/>
@@ -38,7 +39,7 @@
         <MenuItem Header="_Publish HTML documents" IsEnabled="False"/>
       </MenuItem>
     </Menu>
-    <ToolBar Grid.Row="1" Grid.ColumnSpan="2">
+    <ToolBar Grid.Row="1" Grid.ColumnSpan="3">
         <Button IsEnabled="False">
           <StackPanel Orientation="Horizontal">
           <Frame Source="/Doorstop.net;component/VS2017 Image Library/Document/Document_16x.xaml" />
@@ -65,18 +66,13 @@
         <TreeView DockPanel.Dock="Top" ItemsSource="{Binding Path=DocumentItems}" Grid.Row="0" BorderBrush="Black" BorderThickness="1"/>
       </DockPanel>
     </GroupBox>
-    <Grid Name="MainEditor_Grid" Grid.Column="1" Grid.Row="2">
-      <Grid.RowDefinitions>
-        <RowDefinition Height="*"/>
-        <RowDefinition Height="Auto"/>
-        <RowDefinition Height="*"/>
-      </Grid.RowDefinitions>
-      <GridSplitter Grid.Row="1" Height="10"/>
-      <ListView ItemsSource="{Binding Path=DocumentItems}" Grid.Row="0"/>
+    <GridSplitter Grid.Row="2" Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
+
+    <Grid Name="MainEditor_Grid" Grid.Column="2" Grid.Row="2">
       <DataGrid ItemsSource="{Binding Path=DocumentItems}" Grid.Row="2"/>
     </Grid>
 
-    <StatusBar Grid.Row="3" Grid.ColumnSpan="2">
+    <StatusBar Grid.Row="3" Grid.ColumnSpan="3">
       <ProgressBar Value="30" Width="100" Height="15"></ProgressBar>
       <StatusBarItem >This is my status</StatusBarItem>
     </StatusBar>
