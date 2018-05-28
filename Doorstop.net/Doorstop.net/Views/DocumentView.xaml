@@ -9,12 +9,16 @@
         xmlns:system="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="DocumentWindow" Height="450" Width="800">
+  <Window.InputBindings>
+    <KeyBinding Modifiers="Ctrl" Key="S" Command="{Binding SaveDocumentCommand}"/>
+  </Window.InputBindings>
   <Window.DataContext>
     <viewmodels:DocumentViewModel x:Name="theViewModel"/>
   </Window.DataContext>
   <Window.Resources>
     <markdown:Markdown x:Key="Markdown" x:Name="MarkdownOptions"/>
     <markdown:TextToFlowDocumentConverter x:Key="TextToFlowDocumentConverter" Markdown="{StaticResource Markdown}"/>
+    <viewmodels:NeedsToBeSavedBoolToColorConverter x:Key="SavedToColorConverter"/>
   </Window.Resources>
   <Grid>
     <Grid.ColumnDefinitions>
@@ -33,6 +37,7 @@
       <MenuItem Header="_File">
         <MenuItem Header="_New Document"  IsEnabled="False"/>
         <MenuItem Header="_Open Document" Command="{Binding OpenRepoCommand}" CommandParameter="_OpenDocument"  IsEnabled="False"/>
+        <MenuItem Header="_Save Document" Command="{Binding SaveDocumentCommand}"/>
         <Separator/>
         <MenuItem Header="_Exit"/>
         <MenuItem Header="E_xit" Command="ApplicationCommands.Close" InputGestureText="Alt+F4"/>
@@ -64,6 +69,13 @@
             <TextBlock Text="New Link" />
           </StackPanel>
         </Button>
+      <!--<Button IsEnabled="{Binding NeedsToBeSaved}">-->
+      <Button Command="{Binding SaveDocumentCommand}">
+        <StackPanel Orientation="Horizontal" Margin="1">
+          <Frame Margin="1" Source="/Doorstop.net;component/VS2017 Image Library/Save/Save_16x.xaml" />
+          <TextBlock Text="Save" />
+        </StackPanel>
+      </Button>
     </ToolBar>
     <GroupBox Header="Document Explorer" Grid.Column="0" Grid.Row="2" >
     <DockPanel Name="DocumentExplorer_DockPanel" LastChildFill="True">
@@ -75,12 +87,24 @@
     <GridSplitter Grid.Row="2" Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
 
     <Grid Name="MainEditor_Grid" Grid.Column="2" Grid.Row="2">
-      <DataGrid ItemsSource="{Binding Path=DocumentItems}" Grid.Row="2" AutoGenerateColumns="False" FrozenColumnCount="2" Name="Requirements_DataGrid">
+      <DataGrid ItemsSource="{Binding Path=DocumentItems}" Grid.Row="2" AutoGenerateColumns="False" FrozenColumnCount="2" Name="Requirements_DataGrid" CanUserAddRows="False">
+        <DataGrid.CellStyle>
+          <Style TargetType="{x:Type DataGridCell}">
+            <Setter Property="BorderBrush" Value="{Binding NeedsToBeSaved, Converter={StaticResource SavedToColorConverter}}"/>
+          </Style>
+        </DataGrid.CellStyle>
         <DataGrid.Columns>
           <DataGridTemplateColumn Header="UID" Width="SizeToCells" IsReadOnly="True">
             <DataGridTemplateColumn.CellTemplate>
               <DataTemplate>
-                <TextBlock Text="{Binding UID}"/>
+                <Border x:Name="NeedToSaveBorder" BorderThickness="2" BorderBrush="DarkGray">
+                  <TextBlock Text="{Binding UID}"/>
+                </Border>
+                <DataTemplate.Triggers>
+                  <DataTrigger Binding="{Binding NeedsToBeSaved}">
+                    <Setter TargetName="NeedToSaveBorder" Property="BorderBrush" Value="{Binding Path=NeedsToBeSaved, Converter={StaticResource SavedToColorConverter}}"/>
+                  </DataTrigger>                  
+                </DataTemplate.Triggers>
               </DataTemplate>
             </DataGridTemplateColumn.CellTemplate>
           </DataGridTemplateColumn>
@@ -106,7 +130,7 @@
                   <TextBlock Grid.Row="0" Grid.Column="0">Heading:</TextBlock>
                   <TextBlock Grid.Row="1" Grid.Column="0">Text:</TextBlock>
                   <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Heading}" BorderBrush="Black" BorderThickness="1"/>
-                  <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Text}"/>
+                  <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Text}" AcceptsReturn="True" />
                 </Grid>
               </DataTemplate>
             </DataGridTemplateColumn.CellEditingTemplate>

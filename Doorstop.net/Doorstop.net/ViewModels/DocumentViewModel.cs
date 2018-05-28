@@ -7,6 +7,8 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
+using System.Windows.Media;
 
 namespace Doorstop.net.ViewModels
 {
@@ -29,6 +31,10 @@ namespace Doorstop.net.ViewModels
     }
     #endregion
 
+    #region Commands
+    public ICommand SaveDocumentCommand { get; set; }
+    #endregion
+
     public ObservableCollection<Models.Item> DocumentItems { get; set; }
 
     private string filePath;
@@ -47,11 +53,17 @@ namespace Doorstop.net.ViewModels
       }
     }
 
+    private void ExecuteSaveDocument(string Path = null)
+    {
+      System.Windows.MessageBox.Show("Not Implemented yet!!");
+
+    }
+
 
     public DocumentViewModel()
     {
       DocumentItems = new ObservableCollection<Models.Item>();
-
+      SaveDocumentCommand = new DelegateCommand<string>(ExecuteSaveDocument, (z) => { return true; });
     }
 
     public void ReadDocument()
@@ -86,6 +98,24 @@ namespace Doorstop.net.ViewModels
     {
       return this;
     }
+  }
+
+  public class NeedsToBeSavedBoolToColorConverter : System.Windows.Markup.MarkupExtension, System.Windows.Data.IValueConverter
+  {
+    public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+    {
+      return ((value as bool?) == true)
+          ? new SolidColorBrush(Colors.Yellow) : new SolidColorBrush(Colors.LightGreen);
+    }
+    public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+    {
+      return null;
+    }
+    public override object ProvideValue(IServiceProvider serviceProvider)
+    {
+      return this;
+    }
 
   }
+
 }

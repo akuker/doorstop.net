@@ -64,6 +64,10 @@ namespace Doorstop.net.Models
       if (PropertyChanged != null)
       {
         PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        if (propertyName != "NeedsToBeSaved")
+        {
+          NeedsToBeSaved = true;
+        }
       }
     }
     #endregion
@@ -133,6 +137,15 @@ namespace Doorstop.net.Models
       get { return fileName; }
       set { fileName = value; NotifyPropertyChanged(); UID = new Types.UID { Value = System.IO.Path.GetFileNameWithoutExtension(value) }; }
     }
+
+    private bool needsToBeSaved;
+
+    public bool NeedsToBeSaved
+    {
+      get { return needsToBeSaved; }
+      set { needsToBeSaved = value; NotifyPropertyChanged(); }
+    }
+
 
     #endregion
 
@@ -240,6 +253,7 @@ namespace Doorstop.net.Models
       {
         Logger.Warning(ex);
       }
+      retValue.needsToBeSaved = false;
       return retValue;
     }
 
@@ -296,15 +310,22 @@ namespace Doorstop.net.Models
 
     public override string ToString()
     {
-      if((this.heading != null) && (this.Heading.Length > 1))
+      string retString = "";
+      if (NeedsToBeSaved)
+        retString += "* ";
+      if ((this.heading != null) && (this.Heading.Length > 1))
       {
-        return this.Heading;
+        retString += this.Heading;
       }
       else if ((this.Text != null) && (this.Text.Length > 1))
       {
-        return this.Text;
+        retString += this.Text;
       }
-      return this.UID.ToString() + " <empty>";
+      else
+      {
+        retString += this.UID.ToString() + " <empty>";
+      }
+      return retString;
     }
 
   }

@@ -134,6 +134,58 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="VS2017 Image Library\Save\SaveStatusBar1_16x.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="VS2017 Image Library\Save\SaveStatusBar2_16x.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="VS2017 Image Library\Save\SaveStatusBar3_16x.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="VS2017 Image Library\Save\SaveStatusBar4_16x.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="VS2017 Image Library\Save\SaveStatusBar5_16x.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="VS2017 Image Library\Save\SaveStatusBar6_16x.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="VS2017 Image Library\Save\SaveStatusBar7_16x.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="VS2017 Image Library\Save\SaveStatusBar8_16x.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="VS2017 Image Library\Save\SaveStatusBar9_16x.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="VS2017 Image Library\Save\Save_16x.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="VS2017 Image Library\Save\save_16xMD.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="VS2017 Image Library\Save\save_16xSM.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="VS2017 Image Library\Save\Save_grey_16x.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Resource Include="VS2017 Image Library\Folder\Folder_16x.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -196,6 +248,33 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="VS2017 Image Library\Save\SaveStatusBar1_16x.png" />
+    <Content Include="VS2017 Image Library\Save\SaveStatusBar1_16x.svg" />
+    <Resource Include="VS2017 Image Library\Save\SaveStatusBar2_16x.png" />
+    <Content Include="VS2017 Image Library\Save\SaveStatusBar2_16x.svg" />
+    <Resource Include="VS2017 Image Library\Save\SaveStatusBar3_16x.png" />
+    <Content Include="VS2017 Image Library\Save\SaveStatusBar3_16x.svg" />
+    <Resource Include="VS2017 Image Library\Save\SaveStatusBar4_16x.png" />
+    <Content Include="VS2017 Image Library\Save\SaveStatusBar4_16x.svg" />
+    <Resource Include="VS2017 Image Library\Save\SaveStatusBar5_16x.png" />
+    <Content Include="VS2017 Image Library\Save\SaveStatusBar5_16x.svg" />
+    <Resource Include="VS2017 Image Library\Save\SaveStatusBar6_16x.png" />
+    <Content Include="VS2017 Image Library\Save\SaveStatusBar6_16x.svg" />
+    <Resource Include="VS2017 Image Library\Save\SaveStatusBar7_16x.png" />
+    <Content Include="VS2017 Image Library\Save\SaveStatusBar7_16x.svg" />
+    <Resource Include="VS2017 Image Library\Save\SaveStatusBar8_16x.png" />
+    <Content Include="VS2017 Image Library\Save\SaveStatusBar8_16x.svg" />
+    <Resource Include="VS2017 Image Library\Save\SaveStatusBar9_16x.png" />
+    <Content Include="VS2017 Image Library\Save\SaveStatusBar9_16x.svg" />
+    <Resource Include="VS2017 Image Library\Save\Save_16x.png" />
+    <Content Include="VS2017 Image Library\Save\Save_16x.svg" />
+    <Resource Include="VS2017 Image Library\Save\save_16xMD.png" />
+    <Resource Include="VS2017 Image Library\Save\save_16xSM.png" />
+    <Resource Include="VS2017 Image Library\Save\Save_16x_24.bmp" />
+    <Resource Include="VS2017 Image Library\Save\Save_16x_32.bmp" />
+    <Resource Include="VS2017 Image Library\Save\Save_grey_16x.png" />
+    <Content Include="VS2017 Image Library\Save\Save_grey_16x.svg" />
+    <Resource Include="VS2017 Image Library\Save\Save_grey_16x_24.bmp" />
     <Resource Include="VS2017 Image Library\Document\Document_16x.png" />
     <Content Include="VS2017 Image Library\Document\Document_16x.svg" />
     <Resource Include="VS2017 Image Library\Document\document_16xMD.png" />
