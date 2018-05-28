@@ -242,5 +242,11 @@
     <Resource Include="VS2017 Image Library\OpenFolder\OpenFolder_16x_24.bmp" />
     <Resource Include="VS2017 Image Library\OpenFolder\OpenFolder_16x_32.bmp" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Markdown.Xaml\Markdown.Xaml.csproj">
+      <Project>{34186c3b-c308-4cae-b462-db7b5f5e378c}</Project>
+      <Name>Markdown.Xaml</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

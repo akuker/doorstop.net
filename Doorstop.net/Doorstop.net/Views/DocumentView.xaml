@@ -5,11 +5,17 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Doorstop.net.Views"
         xmlns:viewmodels="clr-namespace:Doorstop.net.ViewModels"
+        xmlns:markdown="clr-namespace:Markdown.Xaml;assembly=Markdown.Xaml"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="DocumentWindow" Height="450" Width="800">
   <Window.DataContext>
-    <viewmodels:DocumentViewModel/>
+    <viewmodels:DocumentViewModel x:Name="theViewModel"/>
   </Window.DataContext>
+  <Window.Resources>
+    <markdown:Markdown x:Key="Markdown" x:Name="MarkdownOptions"/>
+    <markdown:TextToFlowDocumentConverter x:Key="TextToFlowDocumentConverter" Markdown="{StaticResource Markdown}"/>
+  </Window.Resources>
   <Grid>
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="Auto"/>
@@ -69,7 +75,57 @@
     <GridSplitter Grid.Row="2" Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
 
     <Grid Name="MainEditor_Grid" Grid.Column="2" Grid.Row="2">
-      <DataGrid ItemsSource="{Binding Path=DocumentItems}" Grid.Row="2"/>
+      <DataGrid ItemsSource="{Binding Path=DocumentItems}" Grid.Row="2" AutoGenerateColumns="False" FrozenColumnCount="2" Name="Requirements_DataGrid">
+        <DataGrid.Columns>
+          <DataGridTemplateColumn Header="UID" Width="SizeToCells" IsReadOnly="True">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding UID}"/>
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
+          <DataGridTemplateColumn Header="Level" Width="SizeToCells" IsReadOnly="True">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding Level}"/>
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
+          <DataGridTemplateColumn Header="Item Text" Width="SizeToCells" IsReadOnly="False">
+            <DataGridTemplateColumn.CellEditingTemplate>
+              <DataTemplate>
+                <Grid>
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                  </Grid.ColumnDefinitions>
+                  <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                  </Grid.RowDefinitions>
+                  <TextBlock Grid.Row="0" Grid.Column="0">Heading:</TextBlock>
+                  <TextBlock Grid.Row="1" Grid.Column="0">Text:</TextBlock>
+                  <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Heading}" BorderBrush="Black" BorderThickness="1"/>
+                  <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Text}"/>
+                </Grid>
+              </DataTemplate>
+            </DataGridTemplateColumn.CellEditingTemplate>
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <StackPanel MinWidth="200" HorizontalAlignment="Stretch">
+                  <StackPanel>
+                    <Border BorderBrush="Black" BorderThickness="1"
+                              Visibility="{Binding Heading, Converter={viewmodels:StringNullOrEmptyToVisibilityConverter}}" Background="LightCyan" >
+                      <TextBlock Text="{Binding Heading}" FontWeight="Bold" Visibility="{Binding Heading, Converter={viewmodels:StringNullOrEmptyToVisibilityConverter}}" />
+                    </Border>
+                    <FlowDocumentScrollViewer HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Document="{Binding Path=Text, Converter={StaticResource TextToFlowDocumentConverter}}" MouseDoubleClick="FlowDocumentScrollViewer_MouseDoubleClick"/>
+                  </StackPanel>
+                </StackPanel>
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
+        </DataGrid.Columns>
+      </DataGrid>
     </Grid>
 
     <StatusBar Grid.Row="3" Grid.ColumnSpan="3">

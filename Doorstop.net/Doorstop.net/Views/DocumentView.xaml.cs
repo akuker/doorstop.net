@@ -25,6 +25,7 @@ namespace Doorstop.net.Views
       InitializeComponent();
       this.Closing += new CancelEventHandler(OnWindowClosing);
 
+
     }
     public DocumentView(string path)
       : this()
@@ -36,11 +37,22 @@ namespace Doorstop.net.Views
         viewModel.FilePath = path;
       }
 
+      Markdown.Xaml.Markdown myMarkdown = this.Resources["Markdown"] as Markdown.Xaml.Markdown;
+      if (myMarkdown != null)
+      {
+        myMarkdown.AssetPathRoot = theViewModel.FilePath;
+      }
     }
 
     void OnWindowClosing(object sender, CancelEventArgs e)
     {
       this.DataContext = null ;
+    }
+
+    private void FlowDocumentScrollViewer_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+    {
+      Requirements_DataGrid.BeginEdit();
+      e.Handled = true;
     }
   }
 }

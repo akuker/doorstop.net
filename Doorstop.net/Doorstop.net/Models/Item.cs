@@ -220,16 +220,16 @@ namespace Doorstop.net.Models
                 retValue.Level = new Types.Level(currentValue.ToString());
                 break;
               case "text":
-                retValue.Text = currentValue.ToString();
+                retValue.Text = currentValue.ToString().TrimEnd('\n');
                 break;
               case "header":
-                retValue.Heading = currentValue.ToString();
+                retValue.Heading = currentValue.ToString().TrimEnd('\n');
                 break;
               case "links":
                 retValue.addLinks(currentValue);
                 break;
               default:
-                retValue.Attributes.Add(new IItemAttribute<string> { Key = currentKey, Value = currentValue.ToString() });
+                retValue.Attributes.Add(new IItemAttribute<string> { Key = currentKey, Value = currentValue.ToString().TrimEnd('\n') });
                 Logger.Debug("Found un-handled Item Attribute: " + currentKey);
                 break;
             }
@@ -294,6 +294,18 @@ namespace Doorstop.net.Models
     }
     #endregion
 
+    public override string ToString()
+    {
+      if((this.heading != null) && (this.Heading.Length > 1))
+      {
+        return this.Heading;
+      }
+      else if ((this.Text != null) && (this.Text.Length > 1))
+      {
+        return this.Text;
+      }
+      return this.UID.ToString() + " <empty>";
+    }
 
   }
 }
