@@ -18,7 +18,10 @@
   <Window.Resources>
     <markdown:Markdown x:Key="Markdown" x:Name="MarkdownOptions"/>
     <markdown:TextToFlowDocumentConverter x:Key="TextToFlowDocumentConverter" Markdown="{StaticResource Markdown}"/>
-    <viewmodels:NeedsToBeSavedBoolToColorConverter x:Key="SavedToColorConverter"/>
+    <viewmodels:NeedsToBeSavedBoolToBorderColorConverter x:Key="SavedToBorderColorConverter"/>
+    <viewmodels:NeedsToBeSavedBoolToBackgroundColorConverter x:Key="SavedToBackgroundColorConverter"/>
+    <viewmodels:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    <viewmodels:BoolToBorderThicknessConverter x:Key="BoolToBorderThicknessConverter"/>
   </Window.Resources>
   <Grid>
     <Grid.ColumnDefinitions>
@@ -51,24 +54,24 @@
       </MenuItem>
     </Menu>
     <ToolBar Grid.Row="1" Grid.ColumnSpan="3">
-        <Button IsEnabled="False">
-          <StackPanel Orientation="Horizontal">
+      <Button IsEnabled="False">
+        <StackPanel Orientation="Horizontal">
           <Frame Source="/Doorstop.net;component/VS2017 Image Library/Document/Document_16x.xaml" />
           <TextBlock>New File</TextBlock>
-          </StackPanel>
-        </Button>
-        <Button IsEnabled="False">
-          <StackPanel Orientation="Horizontal">
-            <Frame Margin="1" Source="/Doorstop.net;component/VS2017 Image Library/FolderOpen/FolderOpen_16x.xaml" />
-            <TextBlock>Open Folder</TextBlock>
-          </StackPanel>
-        </Button>
-        <Button IsEnabled="False">
-          <StackPanel Orientation="Horizontal" Margin="1">
-            <Frame Margin="1" Source="/Doorstop.net;component/VS2017 Image Library/NewRelationship/NewRelationship_16x.xaml" />
-            <TextBlock Text="New Link" />
-          </StackPanel>
-        </Button>
+        </StackPanel>
+      </Button>
+      <Button IsEnabled="False">
+        <StackPanel Orientation="Horizontal">
+          <Frame Margin="1" Source="/Doorstop.net;component/VS2017 Image Library/FolderOpen/FolderOpen_16x.xaml" />
+          <TextBlock>Open Folder</TextBlock>
+        </StackPanel>
+      </Button>
+      <Button IsEnabled="False">
+        <StackPanel Orientation="Horizontal" Margin="1">
+          <Frame Margin="1" Source="/Doorstop.net;component/VS2017 Image Library/NewRelationship/NewRelationship_16x.xaml" />
+          <TextBlock Text="New Link" />
+        </StackPanel>
+      </Button>
       <!--<Button IsEnabled="{Binding NeedsToBeSaved}">-->
       <Button Command="{Binding SaveDocumentCommand}">
         <StackPanel Orientation="Horizontal" Margin="1">
@@ -78,8 +81,8 @@
       </Button>
     </ToolBar>
     <GroupBox Header="Document Explorer" Grid.Column="0" Grid.Row="2" >
-    <DockPanel Name="DocumentExplorer_DockPanel" LastChildFill="True">
-      <Label DockPanel.Dock="Top">HI</Label>
+      <DockPanel Name="DocumentExplorer_DockPanel" LastChildFill="True">
+        <Label DockPanel.Dock="Top">HI</Label>
         <Button DockPanel.Dock="Top">asdf</Button>
         <TreeView DockPanel.Dock="Top" ItemsSource="{Binding Path=DocumentItems}" Grid.Row="0" BorderBrush="Black" BorderThickness="1"/>
       </DockPanel>
@@ -88,30 +91,46 @@
 
     <Grid Name="MainEditor_Grid" Grid.Column="2" Grid.Row="2">
       <DataGrid ItemsSource="{Binding Path=DocumentItems}" Grid.Row="2" AutoGenerateColumns="False" FrozenColumnCount="2" Name="Requirements_DataGrid" CanUserAddRows="False">
+        <DataGrid.Resources>
+          <Style x:Key="textBoxPositionCursor_Style" TargetType="Grid">
+            <EventSetter Event="Loaded" Handler="FocusHere_OnLoaded"/>
+          </Style>
+        </DataGrid.Resources>
         <DataGrid.CellStyle>
           <Style TargetType="{x:Type DataGridCell}">
-            <Setter Property="BorderBrush" Value="{Binding NeedsToBeSaved, Converter={StaticResource SavedToColorConverter}}"/>
+            <Setter Property="BorderBrush" Value="{Binding NeedsToBeSaved, Converter={StaticResource SavedToBorderColorConverter}}"/>
+            <Setter Property="BorderThickness" Value="{Binding NeedsToBeSaved, Converter={StaticResource BoolToBorderThicknessConverter}}"/>
           </Style>
         </DataGrid.CellStyle>
         <DataGrid.Columns>
           <DataGridTemplateColumn Header="UID" Width="SizeToCells" IsReadOnly="True">
             <DataGridTemplateColumn.CellTemplate>
               <DataTemplate>
-                <Border x:Name="NeedToSaveBorder" BorderThickness="2" BorderBrush="DarkGray">
-                  <TextBlock Text="{Binding UID}"/>
-                </Border>
-                <DataTemplate.Triggers>
-                  <DataTrigger Binding="{Binding NeedsToBeSaved}">
-                    <Setter TargetName="NeedToSaveBorder" Property="BorderBrush" Value="{Binding Path=NeedsToBeSaved, Converter={StaticResource SavedToColorConverter}}"/>
-                  </DataTrigger>                  
-                </DataTemplate.Triggers>
+                <Grid>
+                  <Grid x:Name="UidBackground_Grid" Background="{Binding NeedsToBeSaved, Converter={StaticResource SavedToBackgroundColorConverter}}" Opacity="0.25"/>
+                  <TextBlock x:Name="Uid_TextBlock" Text="{Binding UID}"/>
+                  <!-- The following larget block of text is displayed when there is a problem with the Item. Most of the time it should be invisible -->
+                  <TextBlock x:Name="Error_TextBlock" Text="Error!" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Red" FontSize="24" FontWeight="Bold" FontStyle="Italic" RenderTransformOrigin="0.5,0.5" Visibility="{Binding IsInvalid, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <TextBlock.RenderTransform>
+                      <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="-45"/>
+                        <TranslateTransform/>
+                      </TransformGroup>
+                    </TextBlock.RenderTransform>
+                  </TextBlock>
+                </Grid>
               </DataTemplate>
             </DataGridTemplateColumn.CellTemplate>
           </DataGridTemplateColumn>
           <DataGridTemplateColumn Header="Level" Width="SizeToCells" IsReadOnly="True">
             <DataGridTemplateColumn.CellTemplate>
               <DataTemplate>
-                <TextBlock Text="{Binding Level}"/>
+                <Grid>
+                  <Grid x:Name="LevelBackground_Grid" Background="{Binding NeedsToBeSaved, Converter={StaticResource SavedToBackgroundColorConverter}}" Opacity="0.25"/>
+                  <TextBlock x:Name="Level_TextBlock" Text="{Binding Level}"/>
+                </Grid>
               </DataTemplate>
             </DataGridTemplateColumn.CellTemplate>
           </DataGridTemplateColumn>
@@ -119,6 +138,7 @@
             <DataGridTemplateColumn.CellEditingTemplate>
               <DataTemplate>
                 <Grid>
+                  <!--FocusManager.FocusedElement="{Binding TextEdit_TextBox}">-->
                   <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
@@ -127,10 +147,10 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                   </Grid.RowDefinitions>
-                  <TextBlock Grid.Row="0" Grid.Column="0">Heading:</TextBlock>
+                  <TextBlock Grid.Row="0" Grid.Column="0">Header:</TextBlock>
                   <TextBlock Grid.Row="1" Grid.Column="0">Text:</TextBlock>
-                  <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Heading}" BorderBrush="Black" BorderThickness="1"/>
-                  <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Text}" AcceptsReturn="True" />
+                  <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Header}" BorderBrush="Black" BorderThickness="1" Name="HeadingEdit_TextBox"/>
+                  <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Text}" AcceptsReturn="True" Name="TextEdit_TextBox" Loaded="FocusHere_OnLoaded"/>
                 </Grid>
               </DataTemplate>
             </DataGridTemplateColumn.CellEditingTemplate>
@@ -139,8 +159,8 @@
                 <StackPanel MinWidth="200" HorizontalAlignment="Stretch">
                   <StackPanel>
                     <Border BorderBrush="Black" BorderThickness="1"
-                              Visibility="{Binding Heading, Converter={viewmodels:StringNullOrEmptyToVisibilityConverter}}" Background="LightCyan" >
-                      <TextBlock Text="{Binding Heading}" FontWeight="Bold" Visibility="{Binding Heading, Converter={viewmodels:StringNullOrEmptyToVisibilityConverter}}" />
+                              Visibility="{Binding Header, Converter={viewmodels:StringNullOrEmptyToVisibilityConverter}}" Background="LightCyan" >
+                      <TextBlock Text="{Binding Header}" FontWeight="Bold" Visibility="{Binding Header, Converter={viewmodels:StringNullOrEmptyToVisibilityConverter}}" />
                     </Border>
                     <FlowDocumentScrollViewer HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Document="{Binding Path=Text, Converter={StaticResource TextToFlowDocumentConverter}}" MouseDoubleClick="FlowDocumentScrollViewer_MouseDoubleClick"/>
                   </StackPanel>
@@ -156,6 +176,6 @@
       <ProgressBar Value="30" Width="100" Height="15"></ProgressBar>
       <StatusBarItem >This is my status</StatusBarItem>
     </StatusBar>
-      
-    </Grid>
+
+  </Grid>
 </Window>

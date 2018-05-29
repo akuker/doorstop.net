@@ -55,8 +55,11 @@ namespace Doorstop.net.ViewModels
 
     private void ExecuteSaveDocument(string Path = null)
     {
-      System.Windows.MessageBox.Show("Not Implemented yet!!");
-
+      foreach(var item in this.DocumentItems)
+      {
+        if (item.NeedsToBeSaved)
+          item.Save();
+      }
     }
 
 
@@ -100,12 +103,46 @@ namespace Doorstop.net.ViewModels
     }
   }
 
-  public class NeedsToBeSavedBoolToColorConverter : System.Windows.Markup.MarkupExtension, System.Windows.Data.IValueConverter
+  public class NeedsToBeSavedBoolToBorderColorConverter : System.Windows.Markup.MarkupExtension, System.Windows.Data.IValueConverter
   {
     public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
     {
       return ((value as bool?) == true)
-          ? new SolidColorBrush(Colors.Yellow) : new SolidColorBrush(Colors.LightGreen);
+          ? new SolidColorBrush(Colors.Red) : new SolidColorBrush(Colors.LightGreen);
+    }
+    public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+    {
+      return null;
+    }
+    public override object ProvideValue(IServiceProvider serviceProvider)
+    {
+      return this;
+    }
+  }
+
+  public class NeedsToBeSavedBoolToBackgroundColorConverter : System.Windows.Markup.MarkupExtension, System.Windows.Data.IValueConverter
+  {
+    public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+    {
+      return ((value as bool?) == true)
+          ? Brushes.Red : Brushes.LightGray;
+    }
+    public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+    {
+      return null;
+    }
+    public override object ProvideValue(IServiceProvider serviceProvider)
+    {
+      return this;
+    }
+  }
+
+  public class BoolToVisibilityConverter : System.Windows.Markup.MarkupExtension, System.Windows.Data.IValueConverter
+  {
+    public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+    {
+      return ((value as bool?) == true)
+          ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
     }
     public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
     {
@@ -117,5 +154,24 @@ namespace Doorstop.net.ViewModels
     }
 
   }
+
+  public class BoolToBorderThicknessConverter : System.Windows.Markup.MarkupExtension, System.Windows.Data.IValueConverter
+  {
+    public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+    {
+      return ((value as bool?) == true)
+          ? 1 : 0;
+    }
+    public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+    {
+      return null;
+    }
+    public override object ProvideValue(IServiceProvider serviceProvider)
+    {
+      return this;
+    }
+
+  }
+
 
 }

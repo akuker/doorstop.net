@@ -37,7 +37,7 @@
           <Button DockPanel.Dock="Right" Content=" Explore " Command="{Binding LaunchExplorerCommand}"/>
           <Button DockPanel.Dock="Right" Content=" ... " Command="{Binding OpenRepoCommand}"/>
           <Button DockPanel.Dock="Right" Content="Reload" Command="{Binding ReloadRepoCommand}"/>
-          <Button Command="{Binding ButtonClickCommand}">Test</Button>
+          <Button Command="{Binding ButtonClickCommand}" Height="21" VerticalAlignment="Top">Test</Button>
           <TextBox AcceptsReturn="False" DockPanel.Dock="Left" Text="{Binding Path=RequirementsRepoPath, NotifyOnTargetUpdated=True, Mode=TwoWay}" />
         </DockPanel>
       </GroupBox>

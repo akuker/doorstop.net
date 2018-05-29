@@ -105,8 +105,8 @@ namespace Doorstop.net.ViewModels
 
     public void LoadSomething(string bla ="")
     {
-      Document myNewDoc = Document.Load(@"C:\Users\theto\source\repos\doorstop.net\reqs\.doorstop.yml");
-      Item myItem = Item.Load(@"C:\Users\theto\source\repos\doorstop.net\doorstop\core\tests\files\subfolder\REQ004.yml",myNewDoc);
+      Document myNewDoc = Document.Load(@"C:\Users\theto\source\repos\doorstop.net\reqs\tutorial\.doorstop.yml");
+      Item myItem = Item.Load(@"C:\Users\theto\source\repos\doorstop.net\reqs\tutorial\TUT004.yml", myNewDoc);
     }
 
     public DelegateCommand<string> ButtonClickCommand

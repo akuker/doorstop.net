@@ -54,5 +54,26 @@ namespace Doorstop.net.Views
       Requirements_DataGrid.BeginEdit();
       e.Handled = true;
     }
+
+    /// <summary>
+    /// When this event handler is tied to the 'loaded' event, this referened object will be
+    /// given the Focus. If this is a text box, will move the cursor to the end of the text.
+    /// </summary>
+    /// <param name="sender">Sending control</param>
+    /// <param name="e">not used</param>
+    private void FocusHere_OnLoaded(object sender, RoutedEventArgs e)
+    {
+      Control senderControl = sender as Control;
+      if(senderControl != null)
+      {
+        senderControl.Focus();
+      }
+      // If this is a textbox, move the cursor to the end
+      TextBox senderTextBox = sender as TextBox;
+      if(senderTextBox != null)
+      {
+        senderTextBox.CaretIndex = int.MaxValue;
+      }
+    }
   }
 }
