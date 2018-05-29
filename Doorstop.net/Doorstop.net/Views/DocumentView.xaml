@@ -8,7 +8,7 @@
         xmlns:markdown="clr-namespace:Markdown.Xaml;assembly=Markdown.Xaml"
         xmlns:system="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
-        Title="DocumentWindow" Height="450" Width="800">
+        Title="{Binding DirName}" Height="450" Width="800">
   <Window.InputBindings>
     <KeyBinding Modifiers="Ctrl" Key="S" Command="{Binding SaveDocumentCommand}"/>
   </Window.InputBindings>
@@ -97,8 +97,8 @@
         </DataGrid.Resources>
         <DataGrid.CellStyle>
           <Style TargetType="{x:Type DataGridCell}">
-            <Setter Property="BorderBrush" Value="{Binding NeedsToBeSaved, Converter={StaticResource SavedToBorderColorConverter}}"/>
-            <Setter Property="BorderThickness" Value="{Binding NeedsToBeSaved, Converter={StaticResource BoolToBorderThicknessConverter}}"/>
+            <Setter Property="BorderBrush" Value="{Binding Item.NeedsToBeSaved, Converter={StaticResource SavedToBorderColorConverter}}"/>
+            <Setter Property="BorderThickness" Value="{Binding Item.NeedsToBeSaved, Converter={StaticResource BoolToBorderThicknessConverter}}"/>
           </Style>
         </DataGrid.CellStyle>
         <DataGrid.Columns>
@@ -106,10 +106,13 @@
             <DataGridTemplateColumn.CellTemplate>
               <DataTemplate>
                 <Grid>
-                  <Grid x:Name="UidBackground_Grid" Background="{Binding NeedsToBeSaved, Converter={StaticResource SavedToBackgroundColorConverter}}" Opacity="0.25"/>
-                  <TextBlock x:Name="Uid_TextBlock" Text="{Binding UID}"/>
+                  <Grid.InputBindings>
+                    <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding LaunchItemEditorCommand}"/>
+                  </Grid.InputBindings>
+                  <Grid x:Name="UidBackground_Grid" Background="{Binding Item.NeedsToBeSaved, Converter={StaticResource SavedToBackgroundColorConverter}}" Opacity="0.25"/>
+                  <TextBlock x:Name="Uid_TextBlock" Text="{Binding Item.UID}"/>
                   <!-- The following larget block of text is displayed when there is a problem with the Item. Most of the time it should be invisible -->
-                  <TextBlock x:Name="Error_TextBlock" Text="Error!" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Red" FontSize="24" FontWeight="Bold" FontStyle="Italic" RenderTransformOrigin="0.5,0.5" Visibility="{Binding IsInvalid, Converter={StaticResource BoolToVisibilityConverter}}">
+                  <TextBlock x:Name="Error_TextBlock" Text="Error!" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Red" FontSize="24" FontWeight="Bold" FontStyle="Italic" RenderTransformOrigin="0.5,0.5" Visibility="{Binding Item.IsInvalid, Converter={StaticResource BoolToVisibilityConverter}}">
                     <TextBlock.RenderTransform>
                       <TransformGroup>
                         <ScaleTransform/>
@@ -127,8 +130,11 @@
             <DataGridTemplateColumn.CellTemplate>
               <DataTemplate>
                 <Grid>
-                  <Grid x:Name="LevelBackground_Grid" Background="{Binding NeedsToBeSaved, Converter={StaticResource SavedToBackgroundColorConverter}}" Opacity="0.25"/>
-                  <TextBlock x:Name="Level_TextBlock" Text="{Binding Level}"/>
+                  <Grid.InputBindings>
+                    <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding LaunchItemEditorCommand}"/>
+                  </Grid.InputBindings>
+                  <Grid x:Name="LevelBackground_Grid" Background="{Binding Item.NeedsToBeSaved, Converter={StaticResource SavedToBackgroundColorConverter}}" Opacity="0.25"/>
+                  <TextBlock x:Name="Level_TextBlock" Text="{Binding Item.Level}"/>
                 </Grid>
               </DataTemplate>
             </DataGridTemplateColumn.CellTemplate>
@@ -148,21 +154,19 @@
                   </Grid.RowDefinitions>
                   <TextBlock Grid.Row="0" Grid.Column="0">Header:</TextBlock>
                   <TextBlock Grid.Row="1" Grid.Column="0">Text:</TextBlock>
-                  <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Header}" BorderBrush="Black" BorderThickness="1" Name="HeadingEdit_TextBox"/>
-                  <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Text}" AcceptsReturn="True" Name="TextEdit_TextBox" Loaded="FocusHere_OnLoaded"/>
+                  <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Item.Header}" BorderBrush="Black" BorderThickness="1" Name="HeadingEdit_TextBox"/>
+                  <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Item.Text}" AcceptsReturn="True" Name="TextEdit_TextBox" Loaded="FocusHere_OnLoaded"/>
                 </Grid>
               </DataTemplate>
             </DataGridTemplateColumn.CellEditingTemplate>
             <DataGridTemplateColumn.CellTemplate>
               <DataTemplate>
                 <StackPanel MinWidth="200" HorizontalAlignment="Stretch">
-                  <StackPanel>
                     <Border BorderBrush="Black" BorderThickness="1"
-                              Visibility="{Binding Header, Converter={viewmodels:StringNullOrEmptyToVisibilityConverter}}" Background="LightCyan" >
-                      <TextBlock Text="{Binding Header}" FontWeight="Bold" Visibility="{Binding Header, Converter={viewmodels:StringNullOrEmptyToVisibilityConverter}}" />
+                              Visibility="{Binding Item.Header, Converter={viewmodels:StringNullOrEmptyToVisibilityConverter}}" Background="LightCyan" >
+                    <TextBlock Text="{Binding Item.Header}" FontWeight="Bold" Visibility="{Binding Item.Header, Converter={viewmodels:StringNullOrEmptyToVisibilityConverter}}" />
                     </Border>
-                    <FlowDocumentScrollViewer HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Document="{Binding Path=Text, Converter={StaticResource TextToFlowDocumentConverter}}" MouseDoubleClick="FlowDocumentScrollViewer_MouseDoubleClick"/>
-                  </StackPanel>
+                  <FlowDocumentScrollViewer HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Document="{Binding Path=Item.Text, Converter={StaticResource TextToFlowDocumentConverter}}" MouseDoubleClick="FlowDocumentScrollViewer_MouseDoubleClick"/>
                 </StackPanel>
               </DataTemplate>
             </DataGridTemplateColumn.CellTemplate>

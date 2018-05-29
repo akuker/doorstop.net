@@ -12,70 +12,75 @@ using System.Windows.Media;
 
 namespace Doorstop.net.ViewModels
 {
-  public class DocumentViewModel : INotifyPropertyChanged
+  public class DocumentViewModel : DoorstopBaseViewModel
   {
-
-
-    #region INotifyPropertyChanged Utilities
-    public event PropertyChangedEventHandler PropertyChanged;
-
-    // This method is called by the Set accessor of each property.
-    // The CallerMemberName attribute that is applied to the optional propertyName
-    // parameter causes the property name of the caller to be substituted as an argument.
-    private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
+    public class ItemViewModel
     {
-      if (PropertyChanged != null)
+      private Models.Item item;
+
+      public Models.Item Item
       {
-        PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        get { return item; }
+        set { item = value; }
       }
-    }
-    #endregion
 
-    #region Commands
-    public ICommand SaveDocumentCommand { get; set; }
-    #endregion
-
-    public ObservableCollection<Models.Item> DocumentItems { get; set; }
-
-    private string filePath;
-
-    public string FilePath
-    {
-      get { return filePath; }
-      set
+      public override string ToString()
       {
-        if (filePath != value)
-        {
-          filePath = System.IO.Path.GetDirectoryName(value);
-          NotifyPropertyChanged();
-          ReadDocument();
-        }
+        return Item.ToString();
       }
+
+
+      public ICommand LaunchItemEditorCommand { get; set; }
+
+      public ItemViewModel(String path, Document doc)
+      {
+        Item = Models.Item.Load(path, doc);
+        LaunchItemEditorCommand = new DelegateCommand<string>(ExecuteLaunchItemEditor, (z) => { return true; });
+      }
+
+      public void ExecuteLaunchItemEditor(string str = null)
+      {
+        Views.ItemEditor itemEditor = new Views.ItemEditor(this.Item);
+        itemEditor.ShowDialog();
+      }
+
     }
 
-    private void ExecuteSaveDocument(string Path = null)
+    public ObservableCollection<ItemViewModel> DocumentItems { get; set; }
+
+    protected override void ExecuteSaveDocument(string Path = null)
     {
-      foreach(var item in this.DocumentItems)
+      foreach(var itemView in this.DocumentItems)
       {
-        if (item.NeedsToBeSaved)
-          item.Save();
+        if (itemView.Item.NeedsToBeSaved)
+          itemView.Item.Save();
       }
     }
 
-    public DocumentViewModel()
+    public ICommand OpenItemEditorCommand { get; set; }
+
+    public DocumentViewModel() : base()
     {
-      DocumentItems = new ObservableCollection<Models.Item>();
-      SaveDocumentCommand = new DelegateCommand<string>(ExecuteSaveDocument, (z) => { return true; });
+      DocumentItems = new ObservableCollection<ItemViewModel>();
+
+      OpenItemEditorCommand = new DelegateCommand<string>(ExecuteOpenItemEditor, (z) => { return true; });
     }
 
-    public void ReadDocument()
+    public void ExecuteOpenItemEditor(string str=null)
     {
-      Document myNewDoc = Document.Load(FilePath);
+      System.Windows.MessageBox.Show("hi");
+
+    }
+
+    public void ReadDocument(string fileName)
+    {
+      FullFilePath = fileName;
+      Document myNewDoc = Document.Load(FullFilePath);
       string searchFilter = myNewDoc.Prefix.Value + "*.yml";
-      string[] itemsToLoad = System.IO.Directory.GetFiles(FilePath, searchFilter);
+      string[] itemsToLoad = System.IO.Directory.GetFiles(DirName, searchFilter);
       foreach (string itemToLoad in itemsToLoad)
       {
-        Item newItem = Item.Load(itemToLoad,myNewDoc);
+        ItemViewModel newItem = new ItemViewModel(itemToLoad,myNewDoc);
         if (newItem != null)
           DocumentItems.Add(newItem);
         else

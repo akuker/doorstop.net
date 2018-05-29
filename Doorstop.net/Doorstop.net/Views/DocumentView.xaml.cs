@@ -24,8 +24,6 @@ namespace Doorstop.net.Views
     {
       InitializeComponent();
       this.Closing += new CancelEventHandler(OnWindowClosing);
-
-
     }
     public DocumentView(string path)
       : this()
@@ -34,13 +32,13 @@ namespace Doorstop.net.Views
 
       if (viewModel != null)
       {
-        viewModel.FilePath = path;
+        viewModel.ReadDocument(path);
       }
 
       Markdown.Xaml.Markdown myMarkdown = this.Resources["Markdown"] as Markdown.Xaml.Markdown;
       if (myMarkdown != null)
       {
-        myMarkdown.AssetPathRoot = theViewModel.FilePath;
+        myMarkdown.AssetPathRoot = theViewModel.DirName;
       }
     }
 

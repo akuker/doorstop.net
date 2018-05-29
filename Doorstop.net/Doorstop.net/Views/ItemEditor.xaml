@@ -1,0 +1,119 @@
+<Window x:Class="Doorstop.net.Views.ItemEditor"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Doorstop.net.Views"
+        xmlns:viewmodels="clr-namespace:Doorstop.net.ViewModels"
+        xmlns:markdown="clr-namespace:Markdown.Xaml;assembly=Markdown.Xaml"
+        mc:Ignorable="d"
+        Title="{Binding FileName}" Height="450" Width="800">
+  <Window.InputBindings>
+    <KeyBinding Modifiers="Ctrl" Key="S" Command="{Binding SaveDocumentCommand}"/>
+  </Window.InputBindings>
+  <Window.DataContext>
+    <viewmodels:ItemEditorViewModel x:Name="theViewModel"/>
+  </Window.DataContext>
+  <Window.Resources>
+    <markdown:Markdown x:Key="Markdown" x:Name="MarkdownOptions"/>
+    <markdown:TextToFlowDocumentConverter x:Key="TextToFlowDocumentConverter" Markdown="{StaticResource Markdown}"/>
+    <viewmodels:NeedsToBeSavedBoolToBorderColorConverter x:Key="SavedToBorderColorConverter"/>
+    <viewmodels:NeedsToBeSavedBoolToBackgroundColorConverter x:Key="SavedToBackgroundColorConverter"/>
+    <viewmodels:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    <viewmodels:BoolToBorderThicknessConverter x:Key="BoolToBorderThicknessConverter"/>
+  </Window.Resources>
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+    </Grid.RowDefinitions>
+  <Menu Grid.Row="0" Grid.ColumnSpan="3">
+    <MenuItem Header="_File">
+      <MenuItem Header="_Save Item" Command="{Binding SaveDocumentCommand}"/>
+      <Separator/>
+      <MenuItem Header="Close" Command="" InputGestureText="Alt+F4"/>
+    </MenuItem>
+    <MenuItem Header="_Python Commands">
+      <MenuItem Header="_Create Document..." IsEnabled="False"/>
+      <MenuItem Header="_Add Requirement" IsEnabled="False"/>
+      <MenuItem Header="_Link Requirement..." IsEnabled="False"/>
+      <MenuItem Header="_Run Integrity Checks" IsEnabled="False"/>
+      <MenuItem Header="_Publish HTML documents" IsEnabled="False"/>
+    </MenuItem>
+  </Menu>
+  <ToolBar Grid.Row="1" Grid.ColumnSpan="3">
+    <Button Command="{Binding SaveDocumentCommand}">
+      <StackPanel Orientation="Horizontal" Margin="1">
+        <Frame Margin="1" Source="/Doorstop.net;component/VS2017 Image Library/Save/Save_16x.xaml" />
+        <TextBlock Text="Save" />
+      </StackPanel>
+    </Button>
+  </ToolBar>
+  <TabControl Grid.Row="2">
+    <TabItem Header="Item Text">
+    <Grid>
+    <Grid.ColumnDefinitions>
+    <ColumnDefinition Width="*"/>
+    <ColumnDefinition Width="Auto"/>
+    <ColumnDefinition Width="*"/>
+  </Grid.ColumnDefinitions>
+          <GroupBox Grid.Column="0" Header="Edit Item">
+          <DockPanel Grid.Column="0">
+              <TextBlock DockPanel.Dock="Top">Header</TextBlock>
+            <TextBox DockPanel.Dock="Top" Text="{Binding Header}" BorderBrush="Black" BorderThickness="1" Name="HeadingEdit_TextBox"/>
+              <TextBlock DockPanel.Dock="Top">Text</TextBlock>
+              <TextBox DockPanel.Dock="Bottom" Text="{Binding Text}" AcceptsReturn="True" Name="TextEdit_TextBox"/>
+          </DockPanel>
+          </GroupBox>
+          <GridSplitter Width="5" Grid.Column="1"/>
+          <GroupBox Header="Preview" Grid.Column="2">
+            <DockPanel MinWidth="200" HorizontalAlignment="Stretch">
+                <Border BorderBrush="Black" BorderThickness="1"
+                            Visibility="{Binding Header, Converter={viewmodels:StringNullOrEmptyToVisibilityConverter}}" Background="LightCyan" DockPanel.Dock="Top">
+                <TextBlock Text="{Binding Header}" FontWeight="Bold" Visibility="{Binding Header, Converter={viewmodels:StringNullOrEmptyToVisibilityConverter}}" />
+              </Border>
+              <FlowDocumentScrollViewer HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Document="{Binding Path=Text, Converter={StaticResource TextToFlowDocumentConverter}}" DockPanel.Dock="Bottom"/>
+            </DockPanel>
+          </GroupBox>
+        </Grid>
+    </TabItem>
+    <TabItem Header="Attributes">
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+          </Grid.RowDefinitions>
+
+
+          <CheckBox Grid.Row="0" Grid.Column="0" IsChecked="{Binding Normative}">Normative</CheckBox>
+          <CheckBox Grid.Row="1" Grid.Column="0" IsChecked="{Binding Reviewed}">Reviewed</CheckBox>
+          <CheckBox Grid.Row="2" Grid.Column="0" IsChecked="{Binding Normative}">Normative</CheckBox>
+          <CheckBox Grid.Row="3" Grid.Column="0" IsChecked="{Binding Derived}">Derived</CheckBox>
+          <CheckBox Grid.Row="4" Grid.Column="0" IsChecked="{Binding Active}">Active</CheckBox>
+
+          <TextBlock Grid.Column="1" Grid.Row="0">FileName:</TextBlock>
+          <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding FilePath}"/>
+          <TextBlock Grid.Column="1" Grid.Row="2">Reference:</TextBlock>
+          <TextBox Grid.Column="1" Grid.Row="3" Text="{Binding Reference}"/>
+          <TextBlock Grid.Column="1" Grid.Row="4">Links:</TextBlock>
+          <ListBox Grid.Column="1" Grid.Row="5" Grid.RowSpan="3" ItemsSource="{Binding ParentLinks}"/>
+
+
+
+
+        </Grid>
+    </TabItem>
+
+  </TabControl>
+  </Grid>
+</Window>

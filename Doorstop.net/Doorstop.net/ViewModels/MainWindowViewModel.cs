@@ -13,7 +13,7 @@ using System.Windows;
 
 namespace Doorstop.net.ViewModels
 {
-  public class MainWindowViewModel : INotifyPropertyChanged
+  public class MainWindowViewModel : DoorstopBaseViewModel
   {
 
     Dictionary<String, Views.DocumentView> openWindows = new Dictionary<string, Views.DocumentView>();
@@ -46,54 +46,29 @@ namespace Doorstop.net.ViewModels
     }
 
 
-
-    #region INotifyPropertyChanged Utilities
-    public event PropertyChangedEventHandler PropertyChanged;
-
-    // This method is called by the Set accessor of each property.
-    // The CallerMemberName attribute that is applied to the optional propertyName
-    // parameter causes the property name of the caller to be substituted as an argument.
-    private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
-    {
-      if (PropertyChanged != null)
-      {
-        PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-      }
-    }
-
+    #region commands
     public ICommand OpenRepoCommand { get; set; }
     public ICommand ReloadRepoCommand { get; set; }
     public ICommand OpenDocumentCommand { get; set; }
     public ICommand CleanupCommand { get; set; }
     public ICommand LaunchExplorerCommand { get; set; }
 
-
-    //public RelayCommand OpenRepoCommand { get; set; }
-    public RelayCommand ValidateCommand { get; set; }
-    public RelayCommand AddRequirementCommand { get; set; }
-    public RelayCommand PublishAllCommand { get; set; }
-
-    Predicate<object> OpenRepoCanExecute { get; set; }
-
-
+    public ICommand DebugButtonCommand { get; set; }
     #endregion
 
-    private readonly DelegateCommand<string> _clickCommand;
 
 
     public MainWindowViewModel()
     {
       directoryStructure = new ObservableCollection<RequirementsDocument>();
       directoryStructure.Add(new RequirementsDocument {FullPath="Not loaded....", ShortName = "Not loaded...."});
+
       OpenRepoCommand = new DelegateCommand<string>(ExecuteOpenRepo, (z) => { return true; });
       ReloadRepoCommand = new DelegateCommand<string>(ExecuteReloadTree, (z) => { return true; });
       OpenDocumentCommand = new DelegateCommand<string>(ExecuteOpenDocument, (z) => { return true; });
       CleanupCommand = new DelegateCommand<string>(ExecuteCleanup, (z) => { return true; });
       LaunchExplorerCommand = new DelegateCommand<string>(ExecuteLaunchExplorer, (z) => { return true; });
-      //ValidateCommand = new RelayCommand(ExecuteValidate, OpenRepoCanExecute);
-      //AddRequirementCommand = new RelayCommand(ExecuteAddRequirement, OpenRepoCanExecute);
-      //PublishAllCommand = new RelayCommand(ExecutePublishAll, OpenRepoCanExecute);
-      _clickCommand = new DelegateCommand<string>(new Action<string>(LoadSomething), (s) => {return true; });
+      DebugButtonCommand = new DelegateCommand<string>(ExecuteDebugFunction, (z) => { return true; });
 
       if ((Properties.Settings.Default.RepoPath != null) && (Properties.Settings.Default.RepoPath.Length > 0))
       {
@@ -103,16 +78,18 @@ namespace Doorstop.net.ViewModels
 
     }
 
-    public void LoadSomething(string bla ="")
+    /// <summary>
+    /// Test function that is only used for debugging. Should be deleted at some point!
+    /// </summary>
+    /// <param name="bla"></param>
+    public void ExecuteDebugFunction(string path = null)
     {
       Document myNewDoc = Document.Load(@"C:\Users\theto\source\repos\doorstop.net\reqs\tutorial\.doorstop.yml");
       Item myItem = Item.Load(@"C:\Users\theto\source\repos\doorstop.net\reqs\tutorial\TUT004.yml", myNewDoc);
+      Views.ItemEditor itemEditor = new Views.ItemEditor(myItem);
+      itemEditor.ShowDialog();
     }
 
-    public DelegateCommand<string> ButtonClickCommand
-    {
-      get { return _clickCommand; }
-    }
 
     private void ExecuteLaunchExplorer(string path=null)
     {
