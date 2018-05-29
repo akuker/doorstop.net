@@ -72,7 +72,6 @@
           <TextBlock Text="New Link" />
         </StackPanel>
       </Button>
-      <!--<Button IsEnabled="{Binding NeedsToBeSaved}">-->
       <Button Command="{Binding SaveDocumentCommand}">
         <StackPanel Orientation="Horizontal" Margin="1">
           <Frame Margin="1" Source="/Doorstop.net;component/VS2017 Image Library/Save/Save_16x.xaml" />

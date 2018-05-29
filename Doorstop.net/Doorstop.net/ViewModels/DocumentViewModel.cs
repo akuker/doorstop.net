@@ -62,7 +62,6 @@ namespace Doorstop.net.ViewModels
       }
     }
 
-
     public DocumentViewModel()
     {
       DocumentItems = new ObservableCollection<Models.Item>();
@@ -83,7 +82,6 @@ namespace Doorstop.net.ViewModels
           Logger.Warning("Error while reading itemToLoad");
       }
     }
-
   }
 
   public class StringNullOrEmptyToVisibilityConverter : System.Windows.Markup.MarkupExtension, System.Windows.Data.IValueConverter

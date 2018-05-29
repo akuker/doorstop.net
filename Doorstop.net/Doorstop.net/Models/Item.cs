@@ -15,313 +15,7 @@ using YamlDotNet.Serialization;
 namespace Doorstop.net.Models
 {
 
-  public class IItemAttribute<T> : INotifyPropertyChanged
-  {
-    #region INotifyPropertyChanged Utilities
-    public event PropertyChangedEventHandler PropertyChanged;
 
-    // This method is called by the Set accessor of each property.
-    // The CallerMemberName attribute that is applied to the optional propertyName
-    // parameter causes the property name of the caller to be substituted as an argument.
-    private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
-    {
-      if (PropertyChanged != null)
-      {
-        PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-      }
-    }
-    #endregion
-
-    private string localKey;
-    public string Key
-    {
-      get { return localKey; }
-      set { localKey = value; NotifyPropertyChanged(); }
-    }
-
-    private T localValue;
-    public T Value
-    {
-      get { return localValue; }
-      set { localValue = value; NotifyPropertyChanged(); }
-    }
-
-    public override string ToString()
-    {
-      return "[" + Key + "] " + Value.ToString();
-    }
-
-  }
-
-  public class LevelYamlTypeConverter : IYamlTypeConverter
-  {
-    public bool Accepts(Type type)
-    {
-      return type == typeof(Types.Level);
-    }
-
-    public object ReadYaml(IParser parser, Type type)
-    {
-      if (type == typeof(Types.Level))
-      {
-        Scalar myLevel;
-        try
-        {
-          myLevel = parser.Expect<Scalar>();
-        }
-        catch(YamlException ex)
-        {
-          Logger.Warning("An invalid level string was provided");
-          throw ex;
-        }
-        return new Types.Level(myLevel.Value);
-      }
-      else
-      {
-        throw new NotImplementedException("Got type " + type.ToString() + " to deserialize");
-      }
-    }
-
-    public void WriteYaml(IEmitter emitter, object value, Type type)
-    {
-      Types.Level item = value as Types.Level;
-      if (item != null)
-      {
-        emitter.Emit(new Scalar(item.ToString()));
-      }
-    }
-  }
-
-
-
-  public class UidYamlTypeConverter : IYamlTypeConverter
-  {
-    public bool Accepts(Type type)
-    {
-      return type == typeof(Types.UID);
-    }
-
-    public object ReadYaml(IParser parser, Type type)
-    {
-      throw new NotImplementedException();
-    }
-
-    public void WriteYaml(IEmitter emitter, object value, Type type)
-    {
-      Types.UID item = value as Types.UID;
-      if (item != null)
-      {
-        string blah = item.GetHashCode().ToString();
-        emitter.Emit(new YamlDotNet.Core.Events.Scalar(item.Value, item.GetHashCode().ToString()));
-      }
-    }
-  }
-
-
-  public class LinkYamlTypeConverter : IYamlTypeConverter
-  {
-    public bool Accepts(Type type)
-    {
-      return type == typeof(Types.Link);
-    }
-
-    public object ReadYaml(IParser parser, Type type)
-    {
-      throw new NotImplementedException();
-    }
-
-    public void WriteYaml(IEmitter emitter, object value, Type type)
-    {
-      Types.Link item = value as Types.Link;
-      if (item != null)
-      {
-        try
-        {
-          //emitter.Emit(new YamlDotNet.Core.Events.Scalar(null, ));kkc
-          //emitter.Emit(new YamlDotNet.Core.Events.Scalar(null, item.UID.ToString(), item.Stamp.ToString()));
-          emitter.Emit(new YamlDotNet.Core.Events.Scalar(null, "tonykey", item.Stamp.ToString()));
-        }
-        catch(Exception ex)
-        {
-          Logger.Warning("Unable to save Link: " + ex.Message);
-        }
-      }
-    }
-  }
-
-
-
-  public class IItemAttributeYamlTypeConverter<T> : IYamlTypeConverter
-  {
-    public bool Accepts(Type type)
-    {
-      return type == typeof(IItemAttribute<T>);
-    }
-
-    public object ReadYaml(IParser parser, Type type)
-    {
-      throw new NotImplementedException();
-    }
-
-    public void WriteYaml(IEmitter emitter, object value, Type type)
-    {
-      IItemAttribute<T> item = value as IItemAttribute<T>;
-      if (item != null)
-      {
-        //emitter.Emit(new YamlDotNet.Core.Events.Scalar(item.Key, item.Value.ToString()));
-
-        try
-        {
-          emitter.Emit(new YamlDotNet.Core.Events.Scalar(null, item.Key.ToString()));
-          emitter.Emit(new YamlDotNet.Core.Events.Scalar(null, item.Value.ToString()));
-
-          //emitter.Emit(new YamlDotNet.Core.Events.Scalar("anchor","tonytag", "tonyvalue"));
-          //emitter.Emit(new YamlDotNet.Core.Events.Scalar("many", item.Value.ToString()));
-
-        }
-        catch (Exception ex)
-        {
-          Logger.Warning(ex.Message);
-        }
-        //try
-        //{
-        //  emitter.Emit(new YamlDotNet.Core.Events.Scalar(null, item.Value.ToString()));
-        //}
-        //catch (Exception ex)
-        //{
-        //  Logger.Warning(ex.Message);
-        //}
-      }
-    }
-  }
-
-
-
-  public class LinkCollectionYamlTypeConverter : IYamlTypeConverter
-  {
-    public bool Accepts(Type type)
-    {
-      return type == typeof(ObservableCollection<Types.Link>);
-    }
-
-    public object ReadYaml(IParser parser, Type type)
-    {
-      throw new NotImplementedException();
-    }
-
-    public void WriteYaml(IEmitter emitter, object value, Type type)
-    {
-      ObservableCollection<Types.Link> items = value as ObservableCollection<Types.Link>;
-      if (items != null)
-      {
-        emitter.Emit(new MappingStart(null, null, false, MappingStyle.Block));
-        //emitter.Emit(new MappingStyle());
-
-
-        var newMap = new YamlMappingNode();
-
-        foreach (Types.Link item in items)
-        {
-          newMap.Children.Add(new KeyValuePair<YamlNode,YamlNode>(
-            new YamlScalarNode(item.UID.ToString()),
-            new YamlScalarNode(item.Stamp.ToString())));
-          //emitter.Emit(new YamlDotNet.Core.Events.NodeEvent(  Item);
-
-          //try
-          //{
-          //  emitter.Emit(new YamlDotNet.Core.Events.Scalar(item.Key, item.Value.ToString()));
-          //}catch(Exception ex)
-          //{
-          //  Logger.Warning(ex.Message);
-          //}
-
-          //try
-          //{
-          //  emitter.Emit(new YamlDotNet.Core.Events.Scalar("tonykey--" + item.Key.ToString(), null));
-          //}
-          //catch (Exception ex)
-          //{
-          //  Logger.Warning(ex.Message);
-          //}
-
-          //try
-          //{
-          //  emitter.Emit(new YamlMappingNode())
-          //  emitter.Emit(new YamlDotNet.Core.Events.Scalar(null, null, item.UID.ToString()));
-          //  emitter.Emit(new YamlDotNet.Core.Events.Scalar(null, item.Stamp.ToString()));
-          //}
-          //catch (Exception ex)
-          //{
-          //  Logger.Warning(ex.Message);
-          //}
-
-
-          //emitter.Emit(new YamlDotNet.Core.Events.Scalar(null, "tonyvalue--" + item.Value.ToString()));
-        }
-        //emitter.Emit(new YamlDotNet.Core.Events.Scalar(newMap));
-        emitter.Emit(new MappingEnd());
-      }
-    }
-  }
-
-
-  public class IItemAttributeCollectionYamlTypeConverter<T> : IYamlTypeConverter
-  {
-    public bool Accepts(Type type)
-    {
-      return type == typeof(ObservableCollection<IItemAttribute<T>>);
-    }
-
-    public object ReadYaml(IParser parser, Type type)
-    {
-      throw new NotImplementedException();
-    }
-
-    public void WriteYaml(IEmitter emitter, object value, Type type)
-    {
-      ObservableCollection<IItemAttribute<T>> items = value as ObservableCollection<IItemAttribute<T>>;
-      if (items != null)
-      {
-        //emitter.Emit(new MappingStart(null, null, false, MappingStyle.Block));
-
-        foreach (IItemAttribute<T> item in items)
-        {
-          //emitter.Emit(new YamlDotNet.Core.Events.NodeEvent(  Item);
-
-          //try
-          //{
-          //  emitter.Emit(new YamlDotNet.Core.Events.Scalar(item.Key, item.Value.ToString()));
-          //}catch(Exception ex)
-          //{
-          //  Logger.Warning(ex.Message);
-          //}
-
-          //try
-          //{
-          //  emitter.Emit(new YamlDotNet.Core.Events.Scalar("tonykey--" + item.Key.ToString(), null));
-          //}
-          //catch (Exception ex)
-          //{
-          //  Logger.Warning(ex.Message);
-          //}
-
-          try
-          {
-            emitter.Emit(new YamlDotNet.Core.Events.Scalar(null, item.Key));
-            emitter.Emit(new YamlDotNet.Core.Events.Scalar(null, item.Value.ToString()));
-          }
-          catch (Exception ex)
-          {
-            Logger.Warning(ex.Message);
-          }
-
-
-          //emitter.Emit(new YamlDotNet.Core.Events.Scalar(null, "tonyvalue--" + item.Value.ToString()));
-        }
-        //emitter.Emit(new MappingEnd());
-      }
-    }
-  }
 
   public class Item : INotifyPropertyChanged
   {
@@ -368,14 +62,6 @@ namespace Doorstop.net.Models
     {
       get { return prefix; }
       set { prefix = value; NotifyPropertyChanged(); }
-    }
-
-    private int number;
-    [YamlDotNet.Serialization.YamlIgnore]
-    public int Number
-    {
-      get { return number; }
-      set { number = value; NotifyPropertyChanged(); }
     }
 
     private Types.Level level;
@@ -470,7 +156,15 @@ namespace Doorstop.net.Models
 
     #region Links
     [YamlDotNet.Serialization.YamlMember(Alias = "links", Order = 5, ScalarStyle = ScalarStyle.Literal )]
-    public List<Dictionary<string,string>> ParentLinksDictionary
+    ///<remarks>
+    ///The python version of Doorstop saves the links in a sequence of mapping nodes. In order to
+    ///emulate that in C#, we need to present the links to YamlDotNet as a list of dictionaryies
+    ///
+    /// Behind the scenes, the links are stored as just a plain ObservableCollection, so they're
+    /// easier to work with from WPF/C#. The 'ParentLinksYaml' attribute is only used when
+    /// serializing or deserializing links.
+    ///</remarks>
+    public List<Dictionary<string,string>> ParentLinksYaml
     {
       get
       {
@@ -486,7 +180,6 @@ namespace Doorstop.net.Models
       set
       {
         List<Dictionary<string, string>> listDictionary = value as List<Dictionary<string, string>>;
-
         if (value != null)
         {
           try
@@ -515,8 +208,12 @@ namespace Doorstop.net.Models
     [YamlDotNet.Serialization.YamlIgnore]
     public ObservableCollection<Types.Link> ParentLinks { get; set; } = new ObservableCollection<Types.Link>();
     [YamlDotNet.Serialization.YamlIgnore]
+    // ChildLinks are not stored here yet..... this will be future functionality when we go collect all the incoming
+    // links.
     public ObservableCollection<Types.Link> ChildLinks { get; set; } = new ObservableCollection<Types.Link>();
     [YamlDotNet.Serialization.YamlIgnore]
+    // ParentLinksString is used to provide an easy way of dumping the Links to a string for debugging purposes
+    // or for listing them in a GUI.
     public string ParentLinksString
     {
       get
@@ -529,29 +226,14 @@ namespace Doorstop.net.Models
         return retString;
       }
     }
-    [YamlDotNet.Serialization.YamlIgnore]
-    public string ChildrenLinksString
-    {
-      get
-      {
-        string retString = "";
-        foreach (var attribute in ChildLinks)
-        {
-          retString += attribute.ToString() + Environment.NewLine;
-        }
-        return retString;
-      }
-    }
     #endregion
 
-    #region Constructor/destructor
+    #region Constructor, Load and Save
     public Item()
     {
       Level = ItemConstants.DefaultLevel;
     }
-    #endregion
 
-    #region Load and Save
     public static Item Load(string path, Document doc)
     {
       // Load the YML file
@@ -570,7 +252,11 @@ namespace Doorstop.net.Models
           retValue = deserializer.Deserialize<Item>(fileStream);
           retValue.FileName = yamlFileName;
           retValue.NeedsToBeSaved = false;
-          return retValue;
+          // YamlDotNet can put an extra carriage return after some fields. This
+          // code is to work around that. For more information see:
+          //     https://github.com/aaubry/YamlDotNet/issues/246
+          retValue.Header = retValue.Header.TrimEnd(new char[]{'\n','\r'});
+          retValue.Text = retValue.Text.TrimEnd(new char[] { '\n', '\r' });
         }
         catch (Exception ex)
         {
@@ -590,158 +276,49 @@ namespace Doorstop.net.Models
       }
     }
 
-    private void addLinks(YamlNode yamlNode)
-    {
-      YamlSequenceNode listOfLinksNode = yamlNode as YamlSequenceNode;
-      if(listOfLinksNode != null)
-      {
-        foreach (YamlNode child in listOfLinksNode.Children)
-        {
-          YamlMappingNode linkList = child as YamlMappingNode;
-          if(linkList != null)
-          {
-            foreach(var link in linkList.Children)
-            {
-
-              YamlScalarNode linkUid = link.Key as YamlScalarNode;
-              YamlScalarNode linkStamp = link.Value as YamlScalarNode;
-
-              Types.Link newLink = new Types.Link();
-              if((linkUid != null) && (linkUid.ToString().Length > 1))
-              {
-                newLink.UID = new Types.UID { Value = linkUid.ToString() };
-                if ((linkStamp != null) && (linkStamp.ToString().Length > 1))
-                  newLink.Stamp = linkStamp.ToString();
-                this.ParentLinks.Add(newLink);
-                Logger.Debug("[" + this.UID.Value.ToString() + "] links to: " + linkUid.ToString() + ":" + linkStamp.ToString());
-              }
-              else
-              {
-                Logger.Warning("Found invalid link UID in " + this.FileName);
-              }
-            }
-          }
-          else
-          {
-            Logger.Warning("Found invalid link item in " + this.FileName);
-          }
-        }
-      }
-      else
-      {
-        Logger.Warning("Found invalid links in " + this.FileName);
-      }
-      Console.WriteLine(yamlNode);
-
-    }
-
-
-    public class NonSerializable
-    {
-      public string WillThrow { get { throw new Exception(); } }
-
-      public string Text { get; set; }
-    }
-
-    public class NonSerializableTypeConverter : IYamlTypeConverter
-    {
-      public bool Accepts(Type type)
-      {
-        return typeof(NonSerializable).IsAssignableFrom(type);
-      }
-
-      public object ReadYaml(IParser parser, Type type)
-      {
-        var scalar = parser.Expect<Scalar>();
-        return new NonSerializable { Text = scalar.Value };
-      }
-
-      public void WriteYaml(IEmitter emitter, object value, Type type)
-      {
-        emitter.Emit(new Scalar(((NonSerializable)value).Text));
-      }
-    }
-
     public void Save()
     {
+      System.IO.TextWriter textWriter = new System.IO.StreamWriter(FileName, false);
+
       try
       {
         this.NeedsToBeSaved = false;
-        System.IO.TextWriter textWriter = new System.IO.StreamWriter(FileName,false);
-
-        //    var serializer = new SerializerBuilder()
-        //.WithTypeConverter(new NonSerializableTypeConverter())
-        //.Build();
 
         var yamlSerializer = new SerializerBuilder()
-          //.WithTypeConverter(new IItemAttributeYamlTypeConverter<string>())
-          //.WithTypeConverter(new IItemAttributeCollectionYamlTypeConverter<string>())
-          //.WithTypeConverter(new UidYamlTypeConverter())
-          //////.WithTypeConverter(new LinkCollectionYamlTypeConverter())
           .WithTypeConverter(new LevelYamlTypeConverter())
           .Build();
-
-        Console.WriteLine("------------------------------------");
-        yamlSerializer.Serialize(Console.Out, this);
         yamlSerializer.Serialize(textWriter, this);
-
-  //      Console.WriteLine("--Attributes");
-
-  //      foreach (var myAttr in Attributes)
-  //      {
-  ////        var yamlSerializer2 = new SerializerBuilder()
-  ////.WithTypeConverter(new IItemAttributeYamlTypeConverter<string>())
-  ////.WithTypeConverter(new IItemAttributeCollectionYamlTypeConverter<string>())
-  ////.WithTypeConverter(new UidYamlTypeConverter())
-  ////.Build();
-  //        yamlSerializer.Serialize(Console.Out, myAttr);
-  //        yamlSerializer.Serialize(textWriter, myAttr);
-  //      }
-  //      Console.WriteLine("--Done" + Environment.NewLine);
-
-
-
-
-
-
-
-        //emitter.Emit(new Scalar(null, "Topics"));
-        //emitter.Emit(new SequenceStart(null, null, false, SequenceStyle.Block));
-
-        //foreach (string child in node.Topics)
-        //{
-        //  emitter.Emit(new Scalar(null, child));
-        //}
-
-        //emitter.Emit(new SequenceEnd());
-
-        //foreach (IItemAttribute<string> attr in this.Attributes)
-        //{
-        //  yamlSerializer.e
-        //  yamlSerializer.Serialize(textWriter, attr.Value);
-
-        //}
-        textWriter.Close();
-      }catch(Exception ex)
+      }
+      catch (Exception ex)
       {
         Logger.Warning("Unable to save " + FileName + ": " + ex.Message);
       }
-
+      finally
+      {
+        textWriter.Close();
+      }
     }
     #endregion
 
+    /// <summary>
+    /// Used for debugging purposes (mostly). Will return:
+    ///   - the header if it is defined
+    ///   - the first N characters of the item text if it is defined
+    ///   - Item ID (ex REQ0001)
+    /// </summary>
+    /// <returns>String representation of the Item object</returns>
     public override string ToString()
     {
       string retString = "";
       if (NeedsToBeSaved)
         retString += "* ";
-      if ((this.header != null) && (this.Header.Length > 1))
+      if ((this.header != null) && (this.Header.Trim().Length > 1))
       {
         retString += this.Header;
       }
-      else if ((this.Text != null) && (this.Text.Length > 1))
+      else if ((this.Text != null) && (this.Text.Trim().Length > 1))
       {
-        retString += this.Text;
+        retString += this.Text.Substring(0, (Text.Length > 20) ? 20 : Text.Length);
       }
       else
       {

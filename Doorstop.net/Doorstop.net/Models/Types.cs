@@ -156,8 +156,53 @@ namespace Doorstop.net.Models
 
     }
 
-
   }
 
+  /// <summary>
+  /// Template class for holding Item attributes. THIS IS NOT USED curently. But,
+  /// someday it probably should be when the code is refactored to treat attributes
+  /// generically, instead of using hard-coded attributes.
+  ///
+  /// The attribute key will always be a string.
+  /// The attribute value can changed, based upon the class passed to this template
+  /// </summary>
+  /// <typeparam name="T">Class of the attribute value.</typeparam>
+  public class IItemAttribute<T> : INotifyPropertyChanged
+  {
+    #region INotifyPropertyChanged Utilities
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    // This method is called by the Set accessor of each property.
+    // The CallerMemberName attribute that is applied to the optional propertyName
+    // parameter causes the property name of the caller to be substituted as an argument.
+    private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
+    {
+      if (PropertyChanged != null)
+      {
+        PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+      }
+    }
+    #endregion
+
+    private string localKey;
+    public string Key
+    {
+      get { return localKey; }
+      set { localKey = value; NotifyPropertyChanged(); }
+    }
+
+    private T localValue;
+    public T Value
+    {
+      get { return localValue; }
+      set { localValue = value; NotifyPropertyChanged(); }
+    }
+
+    public override string ToString()
+    {
+      return "[" + Key + "] " + Value.ToString();
+    }
+
+  }
 
 }
