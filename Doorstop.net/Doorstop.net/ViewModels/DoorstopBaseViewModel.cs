@@ -32,50 +32,18 @@ namespace Doorstop.net.ViewModels
     public ICommand SaveDocumentCommand { get; set; }
     #endregion
 
-    #region Properties
-    /// <summary>
-    /// Full path of the file associated with this View Model
-    /// </summary>
-    public virtual string DirName
+
+
+    private void JumpToItem_CanExecute(object sender, CanExecuteRoutedEventArgs e)
     {
-      get
-      {
-        return System.IO.Path.GetDirectoryName(fullFilePath);
-      }
+      e.CanExecute = true;
+
     }
 
-    /// <summary>
-    /// File name with extension (without path) of the file associated with this View Model
-    /// </summary>
-    public virtual string FileName
+    private void JumpToItem_Executed(object sender, ExecutedRoutedEventArgs e)
     {
-      get
-      {
-        return System.IO.Path.GetFileName(fullFilePath);
-      }
+      System.Windows.MessageBox.Show("Trying to jump to something");
     }
-    
-    private string fullFilePath;
-    /// <summary>
-    /// Full file name (with path) of the file associated with this View Model
-    /// </summary>
-    public virtual string FullFilePath
-    {
-      get { return fullFilePath; }
-      set
-      {
-        if (fullFilePath != value)
-        {
-          fullFilePath = System.IO.Path.GetFullPath(value);
-          // The Directory name and file name properties are generated from this
-          // property, so we need to raise the property changed event for them as well.
-          NotifyPropertyChanged();
-          NotifyPropertyChanged("DirName");
-          NotifyPropertyChanged("FileName");
-        }
-      }
-    }
-    #endregion
 
     public DoorstopBaseViewModel()
     {

@@ -28,15 +28,14 @@ namespace Doorstop.net.Views
 
     }
 
-
-
-
     public ItemEditor(Item thisItem)
   : this()
     {
-      ViewModels.ItemEditorViewModel viewModel = new ViewModels.ItemEditorViewModel();
-      viewModel.Item = thisItem;
-      this.DataContext = thisItem;
+      ViewModels.ItemEditorViewModel viewModel = this.DataContext as ViewModels.ItemEditorViewModel;
+      if (viewModel != null)
+      {
+        viewModel.Item=thisItem;
+      }
     }
 
     void OnWindowClosing(object sender, CancelEventArgs e)

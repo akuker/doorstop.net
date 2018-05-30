@@ -20,6 +20,46 @@ namespace Doorstop.net.Views
   /// </summary>
   public partial class DocumentView : Window
   {
+    public static RoutedUICommand JumpToItemCommand { get; set; } =
+      new RoutedUICommand("Jump To", "JumpTo", typeof(DocumentView));
+    public static RoutedUICommand OpenItemCommand { get; set; } =
+      new RoutedUICommand("Open Item", "OpenItem", typeof(DocumentView));
+
+    private void OpenItem_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+    {
+        e.CanExecute = true;
+    }
+
+    private void OpenItem_Executed(object sender, ExecutedRoutedEventArgs e)
+    {
+      Models.Item selectedItem = this.Requirements_DataGrid.SelectedItem as Models.Item;
+      if (selectedItem != null)
+      {
+        Views.ItemEditor itemEditor = new Views.ItemEditor(selectedItem);
+        itemEditor.ShowDialog();
+      }
+      else
+      {
+        MessageBox.Show("Invalid item selected" + this.Requirements_DataGrid.SelectedItem.GetType().ToString());
+      }
+    }
+    private void JumpToItem_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+    {
+      e.CanExecute = true;
+    }
+
+    private void JumpToItem_Executed(object sender, ExecutedRoutedEventArgs e)
+    {
+      Models.Item item = e.Parameter as Models.Item;
+      if(item != null)
+      {
+        this.Requirements_DataGrid.SelectedItem = item;
+        this.Requirements_DataGrid.UpdateLayout();
+        this.Requirements_DataGrid.ScrollIntoView(this.Requirements_DataGrid.SelectedItem);
+      }
+
+    }
+
     public DocumentView()
     {
       InitializeComponent();
@@ -38,7 +78,7 @@ namespace Doorstop.net.Views
       Markdown.Xaml.Markdown myMarkdown = this.Resources["Markdown"] as Markdown.Xaml.Markdown;
       if (myMarkdown != null)
       {
-        myMarkdown.AssetPathRoot = theViewModel.DirName;
+        myMarkdown.AssetPathRoot = theViewModel.Document.DirName;
       }
     }
 

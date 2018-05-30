@@ -17,26 +17,8 @@ namespace Doorstop.net.Models
 
 
 
-  public class Item : INotifyPropertyChanged
+  public class Item : DoorstopBaseObject
   {
-    #region INotifyPropertyChanged Utilities
-    public event PropertyChangedEventHandler PropertyChanged;
-
-    // This method is called by the Set accessor of each property.
-    // The CallerMemberName attribute that is applied to the optional propertyName
-    // parameter causes the property name of the caller to be substituted as an argument.
-    private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
-    {
-      if (PropertyChanged != null)
-      {
-        PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-        if (propertyName != "NeedsToBeSaved")
-        {
-          NeedsToBeSaved = true;
-        }
-      }
-    }
-    #endregion
 
     #region Global Constants
     public static class ItemConstants
@@ -126,30 +108,6 @@ namespace Doorstop.net.Models
     {
       get { return active; }
       set { active = value; NotifyPropertyChanged(); }
-    }
-
-    private string fileName;
-    [YamlDotNet.Serialization.YamlIgnore]
-    public string FileName
-    {
-      get { return fileName; }
-      set { fileName = value; NotifyPropertyChanged(); UID = new Types.UID { Value = System.IO.Path.GetFileNameWithoutExtension(value) }; }
-    }
-
-    private bool needsToBeSaved;
-    [YamlDotNet.Serialization.YamlIgnore]
-    public bool NeedsToBeSaved
-    {
-      get { return needsToBeSaved; }
-      set { needsToBeSaved = value; NotifyPropertyChanged(); }
-    }
-
-    private bool isInvalid;
-    [YamlDotNet.Serialization.YamlIgnore]
-    public bool IsInvalid
-    {
-      get { return isInvalid; }
-      set { isInvalid = value; NotifyPropertyChanged(); }
     }
 
     #endregion
@@ -250,8 +208,10 @@ namespace Doorstop.net.Models
             .WithTypeConverter(new LevelYamlTypeConverter())
             .Build();
           retValue = deserializer.Deserialize<Item>(fileStream);
-          retValue.FileName = yamlFileName;
+          retValue.FullFilePath = yamlFileName;
+          retValue.UID = new Types.UID { Value = System.IO.Path.GetFileNameWithoutExtension(yamlFileName) };
           retValue.NeedsToBeSaved = false;
+          retValue.IsInvalid = false;
           // YamlDotNet can put an extra carriage return after some fields. This
           // code is to work around that. For more information see:
           //     https://github.com/aaubry/YamlDotNet/issues/246
@@ -263,7 +223,7 @@ namespace Doorstop.net.Models
           Logger.Warning(ex.Message);
           retValue = new Item
           {
-            FileName = yamlFileName,
+            FullFilePath = yamlFileName,
             Text = "_**Error Loading " + yamlFileName + "**_" + Environment.NewLine + Environment.NewLine + ex.Message,
             IsInvalid = true
           };
@@ -276,8 +236,21 @@ namespace Doorstop.net.Models
       }
     }
 
-    public void Save()
+    /// <summary>
+    /// Saves this object to a YAML file. If the filename is specified, it will be saved to that location
+    /// (can be used to make copies of doorstop objects). Otherwise, will use the original file name of
+    /// this object.
+    ///
+    /// Most of the time, the fileName will not be specified as an argument.
+    /// </summary>
+    /// <param name="fileName">Optional file name to save this object to</param>
+    public override void Save(string fileName = null)
     {
+      // If there is no file name specified, save this as the previously configured
+      // file name.
+      if (fileName == null)
+        fileName = this.FileName;
+
       System.IO.TextWriter textWriter = new System.IO.StreamWriter(FileName, false);
 
       try
@@ -327,5 +300,14 @@ namespace Doorstop.net.Models
       return retString;
     }
 
+    public override void AddChild(DoorstopBaseObject newChild)
+    {
+      throw new NotImplementedException();
+    }
+
+    public override void RemoveChilde(DoorstopBaseObject delChild)
+    {
+      throw new NotImplementedException();
+    }
   }
 }

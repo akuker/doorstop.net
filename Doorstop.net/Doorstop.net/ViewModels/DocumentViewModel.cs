@@ -14,46 +14,23 @@ namespace Doorstop.net.ViewModels
 {
   public class DocumentViewModel : DoorstopBaseViewModel
   {
-    public class ItemViewModel
+
+    public RoutedUICommand JumpToItemCommand { get; set; }
+    private Models.Document document;
+
+    public Models.Document Document
     {
-      private Models.Item item;
-
-      public Models.Item Item
-      {
-        get { return item; }
-        set { item = value; }
-      }
-
-      public override string ToString()
-      {
-        return Item.ToString();
-      }
-
-
-      public ICommand LaunchItemEditorCommand { get; set; }
-
-      public ItemViewModel(String path, Document doc)
-      {
-        Item = Models.Item.Load(path, doc);
-        LaunchItemEditorCommand = new DelegateCommand<string>(ExecuteLaunchItemEditor, (z) => { return true; });
-      }
-
-      public void ExecuteLaunchItemEditor(string str = null)
-      {
-        Views.ItemEditor itemEditor = new Views.ItemEditor(this.Item);
-        itemEditor.ShowDialog();
-      }
-
+      get { return document; }
+      set { document = value; NotifyPropertyChanged(); }
     }
 
-    public ObservableCollection<ItemViewModel> DocumentItems { get; set; }
 
     protected override void ExecuteSaveDocument(string Path = null)
     {
-      foreach(var itemView in this.DocumentItems)
+      foreach(var itemView in Document.DocumentItems)
       {
-        if (itemView.Item.NeedsToBeSaved)
-          itemView.Item.Save();
+        if (itemView.NeedsToBeSaved)
+          itemView.Save();
       }
     }
 
@@ -61,9 +38,9 @@ namespace Doorstop.net.ViewModels
 
     public DocumentViewModel() : base()
     {
-      DocumentItems = new ObservableCollection<ItemViewModel>();
-
       OpenItemEditorCommand = new DelegateCommand<string>(ExecuteOpenItemEditor, (z) => { return true; });
+      JumpToItemCommand = new RoutedUICommand("JumpTo", "JumpTo", typeof(DocumentViewModel));
+
     }
 
     public void ExecuteOpenItemEditor(string str=null)
@@ -72,21 +49,33 @@ namespace Doorstop.net.ViewModels
 
     }
 
+
+    public void ExecuteJumpToItem(object obj = null)
+    {
+      if (obj == null)
+        obj = new object();
+      System.Windows.MessageBox.Show("Jumped to something: " + obj.GetType().ToString());
+    }
+
     public void ReadDocument(string fileName)
     {
-      FullFilePath = fileName;
+      string FullFilePath = fileName;
       Document myNewDoc = Document.Load(FullFilePath);
-      string searchFilter = myNewDoc.Prefix.Value + "*.yml";
-      string[] itemsToLoad = System.IO.Directory.GetFiles(DirName, searchFilter);
-      foreach (string itemToLoad in itemsToLoad)
-      {
-        ItemViewModel newItem = new ItemViewModel(itemToLoad,myNewDoc);
-        if (newItem != null)
-          DocumentItems.Add(newItem);
-        else
-          Logger.Warning("Error while reading itemToLoad");
-      }
+      myNewDoc.LoadChildren();
+      this.Document = myNewDoc;
     }
+
+    private void JumpToItem_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+    {
+      e.CanExecute = this.Document.DocumentItems.Count > 1;
+
+    }
+
+    private void JumpToItem_Executed(object sender, ExecutedRoutedEventArgs e)
+    {
+      System.Windows.MessageBox.Show("Trying to jump to something");
+    }
+
   }
 
   public class StringNullOrEmptyToVisibilityConverter : System.Windows.Markup.MarkupExtension, System.Windows.Data.IValueConverter

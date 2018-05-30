@@ -7,7 +7,7 @@
         xmlns:viewmodels="clr-namespace:Doorstop.net.ViewModels"
         xmlns:markdown="clr-namespace:Markdown.Xaml;assembly=Markdown.Xaml"
         mc:Ignorable="d"
-        Title="{Binding FileName}" Height="450" Width="800">
+        Title="{Binding Item.FileName}" Height="450" Width="800">
   <Window.InputBindings>
     <KeyBinding Modifiers="Ctrl" Key="S" Command="{Binding SaveDocumentCommand}"/>
   </Window.InputBindings>
@@ -61,19 +61,19 @@
           <GroupBox Grid.Column="0" Header="Edit Item">
           <DockPanel Grid.Column="0">
               <TextBlock DockPanel.Dock="Top">Header</TextBlock>
-            <TextBox DockPanel.Dock="Top" Text="{Binding Header}" BorderBrush="Black" BorderThickness="1" Name="HeadingEdit_TextBox"/>
+            <TextBox DockPanel.Dock="Top" Text="{Binding Item.Header}" BorderBrush="Black" BorderThickness="1" Name="HeadingEdit_TextBox"/>
               <TextBlock DockPanel.Dock="Top">Text</TextBlock>
-              <TextBox DockPanel.Dock="Bottom" Text="{Binding Text}" AcceptsReturn="True" Name="TextEdit_TextBox"/>
+              <TextBox DockPanel.Dock="Bottom" Text="{Binding Item.Text}" AcceptsReturn="True" Name="TextEdit_TextBox"/>
           </DockPanel>
           </GroupBox>
           <GridSplitter Width="5" Grid.Column="1"/>
           <GroupBox Header="Preview" Grid.Column="2">
             <DockPanel MinWidth="200" HorizontalAlignment="Stretch">
                 <Border BorderBrush="Black" BorderThickness="1"
-                            Visibility="{Binding Header, Converter={viewmodels:StringNullOrEmptyToVisibilityConverter}}" Background="LightCyan" DockPanel.Dock="Top">
-                <TextBlock Text="{Binding Header}" FontWeight="Bold" Visibility="{Binding Header, Converter={viewmodels:StringNullOrEmptyToVisibilityConverter}}" />
+                            Visibility="{Binding Item.Header, Converter={viewmodels:StringNullOrEmptyToVisibilityConverter}}" Background="LightCyan" DockPanel.Dock="Top">
+                <TextBlock Text="{Binding Item.Header}" FontWeight="Bold" Visibility="{Binding Item.Header, Converter={viewmodels:StringNullOrEmptyToVisibilityConverter}}" />
               </Border>
-              <FlowDocumentScrollViewer HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Document="{Binding Path=Text, Converter={StaticResource TextToFlowDocumentConverter}}" DockPanel.Dock="Bottom"/>
+              <FlowDocumentScrollViewer HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Document="{Binding Path=Item.Text, Converter={StaticResource TextToFlowDocumentConverter}}" DockPanel.Dock="Bottom"/>
             </DockPanel>
           </GroupBox>
         </Grid>
@@ -91,22 +91,23 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
           </Grid.RowDefinitions>
 
 
-          <CheckBox Grid.Row="0" Grid.Column="0" IsChecked="{Binding Normative}">Normative</CheckBox>
-          <CheckBox Grid.Row="1" Grid.Column="0" IsChecked="{Binding Reviewed}">Reviewed</CheckBox>
-          <CheckBox Grid.Row="2" Grid.Column="0" IsChecked="{Binding Normative}">Normative</CheckBox>
-          <CheckBox Grid.Row="3" Grid.Column="0" IsChecked="{Binding Derived}">Derived</CheckBox>
-          <CheckBox Grid.Row="4" Grid.Column="0" IsChecked="{Binding Active}">Active</CheckBox>
+          <CheckBox Grid.Row="0" Grid.Column="0" IsChecked="{Binding Item.Active}">Active</CheckBox>
+          <CheckBox Grid.Row="1" Grid.Column="0" IsChecked="{Binding Item.Derived}">Derived</CheckBox>
+          <CheckBox Grid.Row="2" Grid.Column="0" IsChecked="{Binding Item.Normative}">Normative</CheckBox>
 
           <TextBlock Grid.Column="1" Grid.Row="0">FileName:</TextBlock>
-          <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding FilePath}"/>
+          <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding Item.FullFilePath}"/>
           <TextBlock Grid.Column="1" Grid.Row="2">Reference:</TextBlock>
-          <TextBox Grid.Column="1" Grid.Row="3" Text="{Binding Reference}"/>
-          <TextBlock Grid.Column="1" Grid.Row="4">Links:</TextBlock>
-          <ListBox Grid.Column="1" Grid.Row="5" Grid.RowSpan="3" ItemsSource="{Binding ParentLinks}"/>
+          <TextBox Grid.Column="1" Grid.Row="3" Text="{Binding Item.Reference}"/>
+          <TextBlock Grid.Column="1" Grid.Row="4">Reviewed:</TextBlock>
+          <TextBox Grid.Column="1" Grid.Row="5" Text="{Binding Item.Reviewed}"/>
+          <TextBlock Grid.Column="1" Grid.Row="6">Links:</TextBlock>
+          <ListBox Grid.Column="1" Grid.Row="7" Grid.RowSpan="3" ItemsSource="{Binding Item.ParentLinks}"/>
 
 
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ namespace Doorstop.net.Models
   /// <summary>
   /// Represents a document directory containing an outline of items
   /// </summary>
-  public class Document
+  public class Document : DoorstopBaseObject
   {
     #region Global Constants
     public static class DocumentConstants
@@ -24,10 +25,12 @@ namespace Doorstop.net.Models
 
 
     #region Properties
+    public ObservableCollection<Item> DocumentItems { get; set; }
+
     /// <summary>
     /// Get the path to the document's file.
     /// </summary>
-    public String ConfigFile { get { return System.IO.Path.Combine(this.FilePath, DocumentConstants.ConfigFileName); } }
+    public String ConfigFile { get { return FullFilePath; } }
     /// <summary>
     /// Get the path to the document's assets if they exist else empty string .
     /// </summary>
@@ -35,14 +38,12 @@ namespace Doorstop.net.Models
     {
       get
       {
-        var path = System.IO.Path.Combine(this.FilePath, DocumentConstants.AssetsDirName);
-        if (System.IO.File.Exists(path))
-          return path;
+        if (System.IO.File.Exists(DirName))
+          return DirName;
         else
           return "";
       }
     }
-    public String FilePath { get; private set; } = "";
     public String ProjectRootPath { get; private set; } = "";
     public Types.Prefix Prefix { get; private set; } = new Types.Prefix { Value = "REQ" };
     public int Digits { get; private set; } = 3;
@@ -55,7 +56,7 @@ namespace Doorstop.net.Models
     {
       get
       {
-        var path = System.IO.Path.Combine(this.FilePath, DocumentConstants.SkipFileName);
+        var path = System.IO.Path.Combine(this.DirName, DocumentConstants.SkipFileName);
         return System.IO.File.Exists(path);
       }
     }
@@ -73,7 +74,9 @@ namespace Doorstop.net.Models
     public Document(String path, String root, Types.Prefix prefix)
     {
       data = new Dictionary<string, string>();
-      FilePath = path;
+      Children = new Dictionary<string, DoorstopBaseObject>();
+      DocumentItems = new ObservableCollection<Item>();
+      FullFilePath = path;
       ProjectRootPath = root;
       Prefix = prefix;
 
@@ -149,7 +152,7 @@ namespace Doorstop.net.Models
             }
           }
 
-          retValue = new Document(yamlFilePath, yamlFilePath, newPrexi);
+          retValue = new Document(yamlFileName, yamlFilePath, newPrexi);
           if (newSeparator.Length > 0)
             retValue.Separator = newSeparator;
           if (newParent.Length > 0)
@@ -168,12 +171,41 @@ namespace Doorstop.net.Models
 
     }
 
-    public void LoadDocument()
-    { }
+    public void LoadChildren()
+    {
+      string searchFilter = Prefix.Value + "*.yml";
+      string[] itemsToLoad = System.IO.Directory.GetFiles(DirName, searchFilter);
+      foreach (string itemToLoad in itemsToLoad)
+      {
+        Models.Item newItem = Models.Item.Load(itemToLoad, this);
+        if (newItem != null)
+          DocumentItems.Add(newItem);
+        else
+          Logger.Warning("Error while reading itemToLoad");
+      }
+    }
 
+    /// <summary>
+    /// Saves this object to a YAML file. If the filename is specified, it will be saved to that location
+    /// (can be used to make copies of doorstop objects). Otherwise, will use the original file name of
+    /// this object.
+    ///
+    /// Most of the time, the fileName will not be specified as an argument.
+    /// </summary>
+    /// <param name="fileName">Optional file name to save this object to</param>
+    public override void Save(string fileName = null)
+    {
+      throw new NotImplementedException();
+    }
 
+    public override void AddChild(DoorstopBaseObject newChild)
+    {
+      throw new NotImplementedException();
+    }
 
-
-
+    public override void RemoveChilde(DoorstopBaseObject delChild)
+    {
+      throw new NotImplementedException();
+    }
   }
 }
