@@ -74,7 +74,6 @@ namespace Doorstop.net.Models
     public Document(String path, String root, Types.Prefix prefix)
     {
       data = new Dictionary<string, string>();
-      Children = new Dictionary<string, DoorstopBaseObject>();
       DocumentItems = new ObservableCollection<Item>();
       FullFilePath = path;
       ProjectRootPath = root;
@@ -175,14 +174,23 @@ namespace Doorstop.net.Models
     {
       string searchFilter = Prefix.Value + "*.yml";
       string[] itemsToLoad = System.IO.Directory.GetFiles(DirName, searchFilter);
+      List<Models.Item> unsortedList = new List<Item>();
       foreach (string itemToLoad in itemsToLoad)
       {
         Models.Item newItem = Models.Item.Load(itemToLoad, this);
         if (newItem != null)
-          DocumentItems.Add(newItem);
+          unsortedList.Add(newItem);
         else
           Logger.Warning("Error while reading itemToLoad");
       }
+
+      unsortedList.Sort(DoorstopBaseObject.SortAscendingLevel());
+      foreach(var x in unsortedList)
+      {
+        DocumentItems.Add(x);
+      }
+
+      this.AddChildren(new List<DoorstopBaseObject>(DocumentItems));
     }
 
     /// <summary>

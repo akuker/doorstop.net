@@ -95,23 +95,18 @@
             <RowDefinition Height="*"/>
           </Grid.RowDefinitions>
 
-
           <CheckBox Grid.Row="0" Grid.Column="0" IsChecked="{Binding Item.Active}">Active</CheckBox>
           <CheckBox Grid.Row="1" Grid.Column="0" IsChecked="{Binding Item.Derived}">Derived</CheckBox>
           <CheckBox Grid.Row="2" Grid.Column="0" IsChecked="{Binding Item.Normative}">Normative</CheckBox>
 
           <TextBlock Grid.Column="1" Grid.Row="0">FileName:</TextBlock>
-          <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding Item.FullFilePath}"/>
+          <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding Item.FullFilePath}" IsReadOnly="True"/>
           <TextBlock Grid.Column="1" Grid.Row="2">Reference:</TextBlock>
           <TextBox Grid.Column="1" Grid.Row="3" Text="{Binding Item.Reference}"/>
           <TextBlock Grid.Column="1" Grid.Row="4">Reviewed:</TextBlock>
-          <TextBox Grid.Column="1" Grid.Row="5" Text="{Binding Item.Reviewed}"/>
+          <TextBox Grid.Column="1" Grid.Row="5" Text="{Binding Item.Reviewed}" IsReadOnly="True"/>
           <TextBlock Grid.Column="1" Grid.Row="6">Links:</TextBlock>
           <ListBox Grid.Column="1" Grid.Row="7" Grid.RowSpan="3" ItemsSource="{Binding Item.ParentLinks}"/>
-
-
-
-
         </Grid>
     </TabItem>
 

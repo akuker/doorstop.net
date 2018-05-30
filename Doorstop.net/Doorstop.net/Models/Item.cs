@@ -46,14 +46,6 @@ namespace Doorstop.net.Models
       set { prefix = value; NotifyPropertyChanged(); }
     }
 
-    private Types.Level level;
-    [YamlDotNet.Serialization.YamlMember(SerializeAs = typeof(Types.Level),Alias= "level", Order = 4)]
-    public Types.Level Level
-    {
-      get { return level; }
-      set { level = value; NotifyPropertyChanged(); }
-    }
-
     private string header = "";
     [YamlDotNet.Serialization.YamlMember(SerializeAs = typeof(String), Alias = "header", Order = 3, ScalarStyle = ScalarStyle.Literal)]
     public string Header
@@ -110,6 +102,12 @@ namespace Doorstop.net.Models
       set { active = value; NotifyPropertyChanged(); }
     }
 
+    [YamlDotNet.Serialization.YamlMember(SerializeAs = typeof(Types.Level), Alias = "level", Order = 4)]
+    public Types.Level YamlLevel
+    {
+      get { return Level; }
+      set { Level = value; NotifyPropertyChanged(); }
+    }
     #endregion
 
     #region Links
@@ -291,12 +289,20 @@ namespace Doorstop.net.Models
       }
       else if ((this.Text != null) && (this.Text.Trim().Length > 1))
       {
-        retString += this.Text.Substring(0, (Text.Length > 20) ? 20 : Text.Length);
+        // Get first line of text
+        retString += this.Text.Split(new[] { '\r', '\n' }).FirstOrDefault();
       }
       else
       {
         retString += this.UID.ToString() + " <empty>";
       }
+      retString.Replace("\n", "");
+      retString.Replace("\r", "");
+      if (retString.Length > 20)
+      {
+        retString = retString.Substring(0, 20);
+      }
+      retString.Replace(Environment.NewLine, "");
       return retString;
     }
 

@@ -145,6 +145,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="VS2017 Image Library\Item\Item_16x.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="VS2017 Image Library\Save\SaveStatusBar1_16x.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -260,6 +264,10 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="VS2017 Image Library\Save\SaveStatusBar1_16x.png" />
+    <Resource Include="VS2017 Image Library\Item\Item_16x.png" />
+    <Content Include="VS2017 Image Library\Item\Item_16x.svg" />
+    <Resource Include="VS2017 Image Library\Item\Item_16x_24.bmp" />
+    <Resource Include="VS2017 Image Library\Item\Item_16x_32.bmp" />
     <Content Include="VS2017 Image Library\Save\SaveStatusBar1_16x.svg" />
     <Resource Include="VS2017 Image Library\Save\SaveStatusBar2_16x.png" />
     <Content Include="VS2017 Image Library\Save\SaveStatusBar2_16x.svg" />
